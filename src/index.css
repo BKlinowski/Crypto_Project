@@ -1,5 +1,16 @@
+:root {
+  --background-color: #e7e7de;
+  --textarea-color: #e5e5e5;
+  --textarea-stroke: #8d8d8d;
+  --menu-background-color: #00587a;
+  --menu-item-color: #00868e;
+  --menu-subitem-color: #008891;
+}
+
 body {
+  font-family: "Roboto", sans-serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  background-color: var(--background-color);
 }

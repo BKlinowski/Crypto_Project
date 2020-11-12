@@ -1,0 +1,14 @@
+.NavigationSubitem {
+  width: 90%;
+  height: 81px;
+  background-color: var(--menu-subitem-color);
+  border-bottom: 2px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Text {
+  color: white;
+  font-size: 48px;
+}

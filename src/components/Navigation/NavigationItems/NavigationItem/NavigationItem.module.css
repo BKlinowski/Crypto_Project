@@ -1,0 +1,16 @@
+.NavigationItem {
+  background-color: var(--menu-item-color);
+  border-radius: 8px;
+  width: 90%;
+  height: 73px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+
+.Text {
+  color: white;
+  font-size: 48px;
+}
