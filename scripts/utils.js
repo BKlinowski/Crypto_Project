@@ -3,31 +3,37 @@
  * Ex. BitString.fromString('AAAABBBBCCCCDDDD').bytes() - converts string into bytes
  */
 class BitString{
-
-    str = '';
+    
+    bytesData = [];
 
     static fromString(str){
         let ret = new BitString();
-        ret.str = str;
-        return ret;
-    }
-    static fromBytes(bytesArray){
-        let ret = new BitString();
-        
-        ret.str = "";
-        for(let i = 0; i < bytesArray.length; ++i){
-            let char = String.fromCharCode(bytesArray[i]);
-            ret.str += (char);
+
+        for (let i = 0; i < str.length; ++i) {
+            let code = str.charCodeAt(i);
+            ret.bytesData.push(code);
         }
         
         return ret;
     }
+    static fromBytes(bytesArray){
+        let ret = new BitString();
+        ret.bytesData = bytesArray;
+        return ret;
+    }
     static fromBits(bitsArray){
         let bytesArray = [];
+
+        //TODO: optimize
+        let bits2add = (8 - (bitsArray.length % 8)) % 8;
+        for(let i = 0; i < bits2add; ++i){
+            bitsArray.splice(0, 0, 0);
+        }
+
         for(let i = 0; i < bitsArray.length; i += 8){
             let b = 0;
             for(let j = 0; j < 8; ++j){
-                b &= ( (bitsArray[i+j]&1) << 7-j);
+                b |= ( (bitsArray[i+j]&1) << 7-j);
             }
             bytesArray.push(b);
         }
@@ -38,17 +44,18 @@ class BitString{
     //==============================================
 
     string(){
-        return this.str;
-    }
-    bytes(){
-        let ret = [];
-
-        for (let i = 0; i < this.str.length; ++i) {
-            let code = this.str.charCodeAt(i);
-            ret.push(code);
+        let ret = "";
+        
+        ret = "";
+        for(let i = 0; i < bytesArray.length; ++i){
+            let char = String.fromCharCode(bytesArray[i]);
+            ret += (char);
         }
         
         return ret;
+    }
+    bytes(){
+        return this.bytesData;
     }
     bits(){
         let ret = [];
