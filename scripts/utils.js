@@ -3,7 +3,7 @@
  * Ex. BitString.fromString('AAAABBBBCCCCDDDD').bytes() - converts string into bytes
  */
 class BitString{
-    
+
     bytesData = [];
 
     static fromString(str){
@@ -17,11 +17,18 @@ class BitString{
         return ret;
     }
     static fromBytes(bytesArray){
+        if(typeof(bytesArray) === 'number'){
+            bytesArray = [bytesArray];
+        }
+
         let ret = new BitString();
         ret.bytesData = bytesArray;
         return ret;
     }
     static fromBits(bitsArray){
+        if(typeof(bitsArray) === 'number'){
+            bitsArray = [bitsArray];
+        }
         let bytesArray = [];
 
         //TODO: optimize
@@ -152,6 +159,7 @@ class AnyDimArray{
         let ret = AnyDimArray.copy(a);
         for(let i = 0; i < ret.length; ++i){
             let tmp = a.get1d(i) ^ b.get1d(i);
+            tmp &= 0xff;
             ret.set1d(tmp, i);
         }
 
