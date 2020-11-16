@@ -1,13 +1,13 @@
 /**
  * Convert string/bytes/bits into string/bytes/bits
- * Ex. BitString.fromString('AAAABBBBCCCCDDDD').bytes() - converts string into bytes
+ * Ex. BitConverter.fromString('AAAABBBBCCCCDDDD').toBytes() - converts string into bytes
  */
-class BitString{
+class BitConverter{
 
     bytesData = [];
 
     static fromString(str){
-        let ret = new BitString();
+        let ret = new BitConverter();
 
         for (let i = 0; i < str.length; ++i) {
             let code = str.charCodeAt(i);
@@ -21,7 +21,7 @@ class BitString{
             bytesArray = [bytesArray];
         }
 
-        let ret = new BitString();
+        let ret = new BitConverter();
         ret.bytesData = bytesArray;
         return ret;
     }
@@ -77,6 +77,16 @@ class BitString{
         return ret;
     }
 
+    toString(){
+        return this.string();
+    }
+    toBytes(){
+        return this.bytes();
+    }
+    toBits(){
+        return this.bits();
+    }
+
 }
 
 //=======================================================================
@@ -111,15 +121,29 @@ class AnyDimArray{
     get1d(x){
         return this.arr1d[x];
     }
-    get2d(y, x, width=this.width){
-        return this.arr1d[x + y*width];
-    }
     set1d(value, x){
         this.arr1d[x] = value;
+    }
+
+    get2d(y, x, width=this.width){
+        return this.arr1d[x + y*width];
     }
     set2d(value, y, x, width=this.width){
         this.arr1d[x + y*width] = value;
     }
+    //=======
+    /*getXY(x, y, width=this.width){
+        return this.arr1d[x + y*width];
+    }
+    setXY(value, x, y, width=this.width){
+        this.arr1d[x + y*width] = value;
+    }
+    getRC(r, c, width=this.width){
+        return this.arr1d[x + y*width];
+    }
+    setRC(value, r, c, width=this.width){
+        this.arr1d[x + y*width] = value;
+    }*/
 
     get length(){
         return this.arr1d.length;
@@ -140,8 +164,8 @@ class AnyDimArray{
     }
     print2d(base=10, width = this.width){
         let str2print = "";
-        for(let j = 0; j < this.height; ++j){
-            for(let i = 0; i < width; ++i){
+        for(let i = 0; i < width; ++i){
+            for(let j = 0; j < this.height; ++j){
                 str2print += " " + this.get2d(j, i).toString(base);
             }
             str2print += "\n";

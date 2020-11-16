@@ -97,9 +97,9 @@ class AES{
             state -> [4][Nb]
         */
 
-        /*
-        return AnyDimArray.xor(state, w);
-        */
+        
+        return AnyDimArray.xor(state, w[roundID]);
+        
 
         let retState = AnyDimArray.copy(state);
         for(let c = 0; c < 4; ++c){
@@ -139,12 +139,12 @@ class AES{
     static SubBytes(state){
         for(let i = 0; i < state.length; ++i){
             let tmpArr = splitArrayIntoBlocks(
-                BitString.fromBytes(state.get1d(i)).bits(),
+                BitConverter.fromBytes(state.get1d(i)).bits(),
                 4
             );
             tmpArr = [
-                BitString.fromBits(tmpArr[0]).bytes()[0],
-                BitString.fromBits(tmpArr[1]).bytes()[0]
+                BitConverter.fromBits(tmpArr[0]).bytes()[0],
+                BitConverter.fromBits(tmpArr[1]).bytes()[0]
             ];
             let substitution = this.sbox.get2d( tmpArr[0], tmpArr[1] );
             
@@ -213,7 +213,7 @@ class AES{
             w -> [Nb*(Nr+1)]
         */
 
-        let w = this.KeyExpansion(key, Nk, Nr);
+        let wOld = this.KeyExpansion(key, Nk, Nr);
         /*console.log('moje w:', w);
         let tmpArrxd = [];
         for(let i = 0; i < w.length; i += 1){
@@ -229,7 +229,7 @@ class AES{
         }
         console.log(tmpArrxd);*/
         //===
-        /*let w = [];
+        let w = [];
         for(let i = 0; i < wOld.length; i += 4){
             let tmp = [];
             
@@ -240,7 +240,7 @@ class AES{
             }
             
             w.push(AnyDimArray.from1d(tmp));
-        }*/
+        }
         console.log('moje w:', w);
         
         let state = AnyDimArray.from1d(input, 4);
@@ -289,7 +289,7 @@ class AES{
         this.sbox.print2d(16);
         //console.log( this.sbox.get2d( 5, 3 ).toString(16) );
         //let data = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'];
-        let data = BitString.fromString("ABCDEFGHIJKLMNOP");
+        let data = BitConverter.fromString("ABCDEFGHIJKLMNOP");
         let tmpState = AnyDimArray.from1d(data.bytes(), 4);
         
         console.log(data.bytes());
@@ -300,8 +300,8 @@ class AES{
         console.log('=============');
         */
         
-        let key = BitString.fromString(key_string);
-        let pt = BitString.fromString(pt_string);
+        let key = BitConverter.fromString(key_string);
+        let pt = BitConverter.fromString(pt_string);
 
         //determine number of rounds
         let Nk = 0;
@@ -322,7 +322,7 @@ class AES{
         }
 
         let output = this.Cipher(pt.bytes(), key.bytes(), Nk, Nr);
-        let ct = BitString.fromBytes(output);
+        let ct = BitConverter.fromBytes(output);
 
         console.log('===AES===');
         console.log('pt:');
@@ -337,8 +337,8 @@ class AES{
     }
 
     /*static encrypt(pt, key){
-        let key = BitString.fromString(key);
-        let pt = BitString.fromString(pt);
+        let key = BitConverter.fromString(key);
+        let pt = BitConverter.fromString(pt);
 
         //determine number of rounds
         let rounds = key.bits().length;
@@ -367,7 +367,7 @@ class AES{
         let blocks = splitArrayIntoBlocks(pt.bytes(), 128/8);
         for(let blockID = 0; blockID < blocks.length; ++blockID){
             let block = blocks[blockID];
-            console.log('Block', blockID, ':', block, ' str:', BitString.fromBytes(block).string());
+            console.log('Block', blockID, ':', block, ' str:', BitConverter.fromBytes(block).string());
             let sq = array1Dto2D(block, 4);
             console.log('sq:', sq);
         }
