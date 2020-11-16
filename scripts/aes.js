@@ -1,7 +1,7 @@
 //https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf
 class AES{
 
-    static sbox = AnyDimArray.from1d([
+    static sbox = [
         0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
         0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
         0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15,
@@ -18,7 +18,7 @@ class AES{
         0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e,
         0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf,
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
-    ], 16);
+    ];
 
 
     static KeyExpansion(key, Nk, Nr){
@@ -26,29 +26,29 @@ class AES{
             return AES.SubBytes(input);
         }
         function RotWord(input){
-            let output = AnyDimArray.copy(input);
+            let output = copyArray(input);
             for(let i = 0; i < 4; ++i){
-                let shiftedVal = input.get1d((i + 1) % 4 );
-                output.set1d(shiftedVal, i);
+                let shiftedVal = input[(i + 1) % 4];
+                output[i] = shiftedVal;
             }
             return output;
         }
         
         /*function Rcon(x){
-            return AnyDimArray.from1d([Math.pow(2, x-1) % 229, 0, 0, 0]);
+            return AnyDimArray.from1d([Math.pow(2, x-1) % 229, 0, 0, 0]); //229 = 0xE5
         }*/
         const Rcon = [
-            AnyDimArray.from1d([0x00, 0, 0, 0]),
-            AnyDimArray.from1d([0x01, 0, 0, 0]),
-            AnyDimArray.from1d([0x02, 0, 0, 0]),
-            AnyDimArray.from1d([0x04, 0, 0, 0]),
-            AnyDimArray.from1d([0x08, 0, 0, 0]),
-            AnyDimArray.from1d([0x10, 0, 0, 0]),
-            AnyDimArray.from1d([0x20, 0, 0, 0]),
-            AnyDimArray.from1d([0x40, 0, 0, 0]),
-            AnyDimArray.from1d([0x80, 0, 0, 0]),
-            AnyDimArray.from1d([0x1b, 0, 0, 0]),
-            AnyDimArray.from1d([0x36, 0, 0, 0])
+            [0x00, 0, 0, 0],
+            [0x01, 0, 0, 0],
+            [0x02, 0, 0, 0],
+            [0x04, 0, 0, 0],
+            [0x08, 0, 0, 0],
+            [0x10, 0, 0, 0],
+            [0x20, 0, 0, 0],
+            [0x40, 0, 0, 0],
+            [0x80, 0, 0, 0],
+            [0x1b, 0, 0, 0],
+            [0x36, 0, 0, 0]
         ];
 
         /*
@@ -57,21 +57,14 @@ class AES{
         */
 
         let w = [];
-        //let wCpy = [];
 
         let i = 0;
         while(i < Nk){
-            w[i] = AnyDimArray.from1d([]);
-            w[i].arr1d.push(key[4*i +0]);
-            w[i].arr1d.push(key[4*i +1]);
-            w[i].arr1d.push(key[4*i +2]);
-            w[i].arr1d.push(key[4*i +3]);
-
-            /*wCpy[i] = AnyDimArray.from1d([]);
-            wCpy[i].arr1d.push(key[4*i +0]);
-            wCpy[i].arr1d.push(key[4*i +1]);
-            wCpy[i].arr1d.push(key[4*i +2]);
-            wCpy[i].arr1d.push(key[4*i +3]);*/
+            w[i] = [];
+            w[i].push(key[4*i +0]);
+            w[i].push(key[4*i +1]);
+            w[i].push(key[4*i +2]);
+            w[i].push(key[4*i +3]);
 
             i = i + 1;
         }
@@ -81,11 +74,11 @@ class AES{
         while(i < 4 * (Nr+1)){
             let temp = w[i-1];
             if(i % Nk == 0){
-                temp = AnyDimArray.xor( SubWord(RotWord(temp)), Rcon[Math.floor(i/Nk)] );
+                temp = XOR( SubWord(RotWord(temp)), Rcon[Math.floor(i/Nk)] );
             }else if(Nk > 6 && i % Nk == 4){
                 temp = SubWord(temp);
             }
-            w[i] = AnyDimArray.xor(w[i-Nk], temp);
+            w[i] = XOR(w[i-Nk], temp);
             
             i = i + 1;
         }
@@ -98,7 +91,7 @@ class AES{
         */
 
         
-        return AnyDimArray.xor(state, w[roundID]);
+        return XOR(state, w[roundID]);
         
 
         let retState = AnyDimArray.copy(state);
@@ -139,64 +132,107 @@ class AES{
     static SubBytes(state){
         for(let i = 0; i < state.length; ++i){
             let tmpArr = splitArrayIntoBlocks(
-                BitConverter.fromBytes(state.get1d(i)).bits(),
+                BitConverter.fromBytes(state[i]).toBits(),
                 4
             );
             tmpArr = [
-                BitConverter.fromBits(tmpArr[0]).bytes()[0],
-                BitConverter.fromBits(tmpArr[1]).bytes()[0]
+                BitConverter.fromBits(tmpArr[0]).toBytes()[0],
+                BitConverter.fromBits(tmpArr[1]).toBytes()[0]
             ];
-            let substitution = this.sbox.get2d( tmpArr[0], tmpArr[1] );
-            
-            state.set1d(substitution, i); //state[i] = substitution
+            let substitution = this.sbox[ rcTo1d(tmpArr[0], tmpArr[1], 16) ];
+            state[i] = substitution;
         }
         return state;
     }
     static ShiftRows(state){
-        let retState = AnyDimArray.copy(state); //copy state into retState
+        let retState = copyArray(state);
 
-        for(let i = 1; i < 4; ++i){
-            for(let j = 0; j < 4; ++j){
-                let shiftedVal = state.get2d(i, (j + i) % 4 );
-                retState.set2d(shiftedVal, i, j);
+        for(let r = 1; r < 4; ++r){
+            for(let c = 0; c < 4; ++c){
+                let shiftedVal = state[ rcTo1d(r, (c + r) % 4 ) ];
+                retState[ rcTo1d(r, c) ] = shiftedVal;
             }
         }
 
         return retState;
     }
-    static MixColumns(state){
-        let retState = AnyDimArray.copy(state); //copy state into retState
 
-        for(let c = 1; c < 4; ++c){
+    // https://crypto.stackexchange.com/questions/2402/how-to-solve-mixcolumns
+    static MixColumns(state){
+        let retState = copyArray(state);
+
+        for(let c = 0; c < 4; ++c){
             let newVal;
             /*console.log(
                 'c=' + c, 'r=0', 
                 state.get2d(0, c), state.get2d(1, c), state.get2d(2, c), state.get2d(3, c)
             );*/
+
+            let r_a = state[rcTo1d(0, c)];
+            let r_b = state[rcTo1d(1, c)];
+            let r_c = state[rcTo1d(2, c)];
+            let r_d = state[rcTo1d(3, c)];
+
+            function mulX2(value){
+                let ret = value << 1;
+                if(value >> 7 & 1){
+                    ret ^= 0x1B;
+                }
+                return ret & 0xff;
+            }
+            function mulX3(value){
+                return mulX2(value) ^ value;
+            }
+            //r = 0
+            newVal = mulX2(r_a) ^ mulX3(r_b) ^ r_c ^ r_d;
+            retState[rcTo1d(0, c)] = newVal;
+            
+            newVal = r_a ^ mulX2(r_b) ^ mulX3(r_c) ^ r_d;
+            retState[rcTo1d(1, c)] = newVal;
+            
+            newVal = r_a ^ r_b ^ mulX2(r_c) ^ mulX3(r_d);
+            retState[rcTo1d(2, c)] = newVal;
+            
+            newVal = mulX3(r_a) ^ r_b ^ r_c ^ mulX2(r_d);
+            retState[rcTo1d(3, c)] = newVal;
+            continue;
+
             //r = 0
             newVal = 
-                ( 0x02 * state.get2d(0, c) ) ^ ( 0x03 * state.get2d(1, c) ) ^ state.get2d(2, c) ^ state.get2d(3, c)
+                ( state[rcTo1d(0, c)] << 1 ^ 0x1B ) ^
+                ( 0x03 * state[rcTo1d(1, c)]  % 0xAC ) ^
+                state[rcTo1d(2, c)] ^
+                state[rcTo1d(3, c)]
             ;
-            newVal &= 0xff;
-            retState.set2d(newVal, 0, c);
+            //newVal &= 0xff;
+            retState[ rcTo1d(0, c) ] = newVal;
             //r = 1
             newVal = 
-                state.get2d(0, c) ^ ( 0x02 * state.get2d(1, c) ) ^ ( 0x03 * state.get2d(2, c)) ^ state.get2d(3, c)
+                state[rcTo1d(0, c)] ^
+                ( state[rcTo1d(1, c)] << 1 ^ 0x1B ) ^
+                ( state[rcTo1d(2, c)] << 1 ^ 0x1B ^ state[rcTo1d(2, c)] ) ^
+                state[rcTo1d(3, c)]
             ;
-            newVal &= 0xff;
-            retState.set2d(newVal, 1, c);
+            //newVal &= 0xff;
+            retState[ rcTo1d(1, c) ] = newVal;
             //r = 2
             newVal = 
-                state.get2d(0, c) ^ state.get2d(1, c) ^ ( 0x02 * state.get2d(2, c)) ^ ( 0x03 * state.get2d(3, c) )
+                state[rcTo1d(0, c)] ^
+                state[rcTo1d(1, c)] ^
+                ( state[rcTo1d(2, c)] << 1 ^ 0x1B ) ^
+                ( 0x03 * state[rcTo1d(3, c)] )
             ;
-            newVal &= 0xff;
-            retState.set2d(newVal, 2, c);
+            //newVal &= 0xff;
+            retState[ rcTo1d(2, c) ] = newVal;
             //r = 3
             newVal = 
-                ( 0x03 * state.get2d(0, c) ) ^ state.get2d(1, c) ^ state.get2d(2, c) ^ ( 0x02 * state.get2d(3, c) )
+                ( 0x03 * state[rcTo1d(0, c)] ) ^
+                state[rcTo1d(1, c)] ^
+                state[rcTo1d(2, c)] ^
+                ( state[rcTo1d(3, c)] << 1 ^ 0x1B )
             ;
-            newVal &= 0xff;
-            retState.set2d(newVal, 3, c);
+            //newVal &= 0xff;
+            retState[ rcTo1d(3, c) ] = newVal;
             
         }
 
@@ -207,6 +243,8 @@ class AES{
      * expects input and key to be array of bytes, Nk and Nr ints
      */
     static Cipher(input, key, Nk, Nr){
+        input = roteteArray(input);
+        //key = roteteArray(key);
         /*
             input -> [4*Nb]
             output -> [4*Nb] (return)
@@ -229,39 +267,40 @@ class AES{
         }
         console.log(tmpArrxd);*/
         //===
+        //let w = wOld;
         let w = [];
         for(let i = 0; i < wOld.length; i += 4){
             let tmp = [];
             
             for(let zm2 = 0; zm2 < 4; ++zm2){
                 for(let zm1 = 0; zm1 < 4; ++zm1){
-                    tmp.push(wOld[i + zm2].get1d(zm1));
+                    tmp.push(wOld[i + zm1][zm2]);
                 }
             }
             
-            w.push(AnyDimArray.from1d(tmp));
+            w.push(tmp);
         }
-        console.log('moje w:', w);
+        //console.log('moje w:', w);
         
-        let state = AnyDimArray.from1d(input, 4);
+        let state = input;
         /*console.log('Before rot', 0);
-        state.print2d(16);
+        print1dArrayAs2d(state);
         //rotate state
         for(let j = 1; j <= 3; ++j){
             for(let i = 0; i < j; ++i){
-                let tmpA = state.get2d(i, j);
-                let tmpB = state.get2d(j, i);
-                state.set2d(tmpA, j, i);
-                state.set2d(tmpB, i, j);
+                let tmpA = state[ rcTo1d(i, j) ];
+                let tmpB = state[ rcTo1d(j, i) ];
+                state[ rcTo1d(j, i) ] = tmpA;
+                state[ rcTo1d(i, j) ] = tmpB;
             }
         }*/
-        console.log('Before round', 0);
-        state.print2d(16);
+        //console.log('Before round', 0);
+        //print1dArrayAs2d(state);
 
-        debugger;
+        //debugger;
         state = this.AddRoundKey(state, w, 0);
-        console.log('After round', 0);
-        state.print2d(16);
+        //console.log('After round', 0);
+        //print1dArrayAs2d(state);
 
         for(let round = 1; round <= Nr-1; ++round){
             state = this.SubBytes(state);
@@ -269,17 +308,17 @@ class AES{
             state = this.MixColumns(state);
             state = this.AddRoundKey(state, w, round);
             
-            console.log('After round', round);
-            state.print2d(16);
+            //console.log('After round', round);
+            //print1dArrayAs2d(state);
         }
 
         state = this.SubBytes(state);
         state = this.ShiftRows(state);
         state = this.AddRoundKey(state, w, Nr);
-        console.log('After round', Nr);
-        state.print2d(16);
+        //console.log('After round', Nr);
+        //print1dArrayAs2d(state);
 
-        let output = state.arr1d;
+        let output = roteteArray(state);
         return output;
     }
 
@@ -322,60 +361,19 @@ class AES{
         }
 
         let output = this.Cipher(pt.bytes(), key.bytes(), Nk, Nr);
-        let ct = BitConverter.fromBytes(output);
+        //let ct = BitConverter.fromBytes(output);
+        let ct = output;
 
-        console.log('===AES===');
+        /*console.log('===AES===');
         console.log('pt:');
-        AnyDimArray.from1d(pt.bytes()).print1d(16)
+        print1dArrayAs2d(pt.bytes());        
         console.log('key:');
-        AnyDimArray.from1d(key.bytes()).print1d(16)
+        print1dArrayAs2d(key.bytes());
         console.log('ct:');
-        AnyDimArray.from1d(ct.bytes()).print1d(16)
+        print1dArrayAs2d(ct.bytes());*/
         
         
-        return ct.bytes();
+        return ct;
     }
-
-    /*static encrypt(pt, key){
-        let key = BitConverter.fromString(key);
-        let pt = BitConverter.fromString(pt);
-
-        //determine number of rounds
-        let rounds = key.bits().length;
-        if(rounds <= 128){
-            rounds = 10;
-        }else if(rounds <= 192){
-            rounds = 12;
-        }else if(rounds <= 256){
-            rounds = 14;
-        }else{
-            //error or just 14?
-            rounds = 14;
-        }
-
-        console.log('==============================');
-        console.log('AES ENCRYPT');
-
-        console.log('   pt:', pt.string());
-        console.log('bytes:', pt.bytes());
-        console.log(' bits:', pt.bits());
-
-        
-
-        //split into blocks
-
-        let blocks = splitArrayIntoBlocks(pt.bytes(), 128/8);
-        for(let blockID = 0; blockID < blocks.length; ++blockID){
-            let block = blocks[blockID];
-            console.log('Block', blockID, ':', block, ' str:', BitConverter.fromBytes(block).string());
-            let sq = array1Dto2D(block, 4);
-            console.log('sq:', sq);
-        }
-
-        console.log('==============================');
-    }
-    static decrypt(){
-
-    }*/
 
 }
