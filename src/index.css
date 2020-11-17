@@ -3,7 +3,7 @@
   --textarea-color: #e5e5e5;
   --textarea-stroke: #8d8d8d;
   --menu-background-color: #00587a;
-  --menu-item-color: #00868e;
+  --menu-item-color: #006e75;
   --menu-subitem-color: #008891;
 }
 
@@ -13,4 +13,8 @@ body {
   padding: 0;
   box-sizing: border-box;
   background-color: var(--background-color);
+}
+
+html {
+  overflow-y: overlay;
 }
