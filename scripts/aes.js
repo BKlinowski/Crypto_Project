@@ -1,6 +1,18 @@
 /**
  * AES128
  * 
+ * Usage:
+ * 
+ *  -encryption: AES.encrypt(plaintext, key) -> ciphertext
+ * 
+ *  -decryption: AES.decrypt(ciphertext, key) -> plaintext
+ * 
+ * Operates on 16 bytes blocks only:
+ * 
+ * blocks shorter - will be padded,
+ * 
+ * blocks longer - undefined behaviour (probably will crash at some point)
+ * 
  * Documentation used: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf
  * Made use of (within MixColumns function): https://crypto.stackexchange.com/a/2403
  */
