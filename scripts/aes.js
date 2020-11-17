@@ -1,4 +1,9 @@
-//https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf
+/**
+ * AES
+ * 
+ * Documentation used: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf
+ * Made use of (within MixColumns function): https://crypto.stackexchange.com/a/2403
+ */
 class AES{
 
     static sbox = [
@@ -33,10 +38,6 @@ class AES{
             }
             return output;
         }
-        
-        /*function Rcon(x){
-            return AnyDimArray.from1d([Math.pow(2, x-1) % 229, 0, 0, 0]); //229 = 0xE5
-        }*/
         const Rcon = [
             [0x00, 0, 0, 0],
             [0x01, 0, 0, 0],
@@ -47,14 +48,9 @@ class AES{
             [0x20, 0, 0, 0],
             [0x40, 0, 0, 0],
             [0x80, 0, 0, 0],
-            [0x1b, 0, 0, 0],
+            [0x1b, 0, 0, 0], // = 0x80 << 1 ^ 0x11B
             [0x36, 0, 0, 0]
         ];
-
-        /*
-            key -> [4*Nk]
-            w   -> [Nb * (Nr+1)] (return)
-        */
 
         let w = [];
 
@@ -83,63 +79,28 @@ class AES{
             i = i + 1;
         }
 
-        return w;
-    }
-    static AddRoundKey(state, w, roundID){
-        /*
-            state -> [4][Nb]
-        */
-
         
-        return XOR(state, w[roundID]);
-        
-
-        let retState = AnyDimArray.copy(state);
-        for(let c = 0; c < 4; ++c){
-            let val;
-
-            val = (state.get2d(0, c) ^ w[roundID*4 + c].get1d(0)) & 0xff;
-            /*if(state.get2d(0, c) > 0xff || w[roundID*4 + c].get1d(0) > 0xff){
-                console.log('aaa', state.get2d(0, c), w[roundID*4 + c].get1d(0));
-                debugger;
-            }*/
-            retState.set2d(val, 0, c);
+        let w2 = [];
+        for(let i = 0; i < w.length; i += 4){
+            let tmp = [];
             
-            val = (state.get2d(1, c) ^ w[roundID*4 + c].get1d(1)) & 0xff;
-            /*if(state.get2d(1, c) > 0xff || w[roundID*4 + c].get1d(1) > 0xff){
-                console.log('aaa', state.get2d(0, c), w[roundID*4 + c].get1d(0));
-                debugger;
-            }*/
-            retState.set2d(val, 1, c);
-
-            val = (state.get2d(2, c) ^ w[roundID*4 + c].get1d(2)) & 0xff;
-            /*if(state.get2d(2, c) > 0xff || w[roundID*4 + c].get1d(2) > 0xff){
-                console.log('aaa', state.get2d(0, c), w[roundID*4 + c].get1d(0));
-                debugger;
-            }*/
-            retState.set2d(val, 2, c);
-
-            val = (state.get2d(3, c) ^ w[roundID*4 + c].get1d(3)) & 0xff;
-            /*if(state.get2d(3, c) > 0xff || w[roundID*4 + c].get1d(3) > 0xff){
-                console.log('aaa', state.get2d(0, c), w[roundID*4 + c].get1d(0));
-                debugger;
-            }*/
-            retState.set2d(val, 3, c);
+            for(let zm2 = 0; zm2 < 4; ++zm2){
+                for(let zm1 = 0; zm1 < 4; ++zm1){
+                    tmp.push(w[i + zm1][zm2]);
+                }
+            }
+            
+            w2.push(tmp);
         }
 
-        return retState;
+        return w2;
+    }
+    static AddRoundKey(state, w, roundID){        
+        return XOR(state, w[roundID]);
     }
     static SubBytes(state){
         for(let i = 0; i < state.length; ++i){
-            let tmpArr = splitArrayIntoBlocks(
-                BitConverter.fromBytes(state[i]).toBits(),
-                4
-            );
-            tmpArr = [
-                BitConverter.fromBits(tmpArr[0]).toBytes()[0],
-                BitConverter.fromBits(tmpArr[1]).toBytes()[0]
-            ];
-            let substitution = this.sbox[ rcTo1d(tmpArr[0], tmpArr[1], 16) ];
+            let substitution = this.sbox[state[i]];
             state[i] = substitution;
         }
         return state;
@@ -157,33 +118,28 @@ class AES{
         return retState;
     }
 
-    // https://crypto.stackexchange.com/questions/2402/how-to-solve-mixcolumns
     static MixColumns(state){
         let retState = copyArray(state);
 
+        function mulX2(value){
+            let ret = value << 1;
+            if(value >> 7 & 1){
+                ret ^= 0x1B;
+            }
+            return ret & 0xff;
+        }
+        function mulX3(value){
+            return mulX2(value) ^ value;
+        }
+
         for(let c = 0; c < 4; ++c){
             let newVal;
-            /*console.log(
-                'c=' + c, 'r=0', 
-                state.get2d(0, c), state.get2d(1, c), state.get2d(2, c), state.get2d(3, c)
-            );*/
 
             let r_a = state[rcTo1d(0, c)];
             let r_b = state[rcTo1d(1, c)];
             let r_c = state[rcTo1d(2, c)];
             let r_d = state[rcTo1d(3, c)];
-
-            function mulX2(value){
-                let ret = value << 1;
-                if(value >> 7 & 1){
-                    ret ^= 0x1B;
-                }
-                return ret & 0xff;
-            }
-            function mulX3(value){
-                return mulX2(value) ^ value;
-            }
-            //r = 0
+            
             newVal = mulX2(r_a) ^ mulX3(r_b) ^ r_c ^ r_d;
             retState[rcTo1d(0, c)] = newVal;
             
@@ -194,46 +150,7 @@ class AES{
             retState[rcTo1d(2, c)] = newVal;
             
             newVal = mulX3(r_a) ^ r_b ^ r_c ^ mulX2(r_d);
-            retState[rcTo1d(3, c)] = newVal;
-            continue;
-
-            //r = 0
-            newVal = 
-                ( state[rcTo1d(0, c)] << 1 ^ 0x1B ) ^
-                ( 0x03 * state[rcTo1d(1, c)]  % 0xAC ) ^
-                state[rcTo1d(2, c)] ^
-                state[rcTo1d(3, c)]
-            ;
-            //newVal &= 0xff;
-            retState[ rcTo1d(0, c) ] = newVal;
-            //r = 1
-            newVal = 
-                state[rcTo1d(0, c)] ^
-                ( state[rcTo1d(1, c)] << 1 ^ 0x1B ) ^
-                ( state[rcTo1d(2, c)] << 1 ^ 0x1B ^ state[rcTo1d(2, c)] ) ^
-                state[rcTo1d(3, c)]
-            ;
-            //newVal &= 0xff;
-            retState[ rcTo1d(1, c) ] = newVal;
-            //r = 2
-            newVal = 
-                state[rcTo1d(0, c)] ^
-                state[rcTo1d(1, c)] ^
-                ( state[rcTo1d(2, c)] << 1 ^ 0x1B ) ^
-                ( 0x03 * state[rcTo1d(3, c)] )
-            ;
-            //newVal &= 0xff;
-            retState[ rcTo1d(2, c) ] = newVal;
-            //r = 3
-            newVal = 
-                ( 0x03 * state[rcTo1d(0, c)] ) ^
-                state[rcTo1d(1, c)] ^
-                state[rcTo1d(2, c)] ^
-                ( state[rcTo1d(3, c)] << 1 ^ 0x1B )
-            ;
-            //newVal &= 0xff;
-            retState[ rcTo1d(3, c) ] = newVal;
-            
+            retState[rcTo1d(3, c)] = newVal;            
         }
 
         return retState;
@@ -245,102 +162,34 @@ class AES{
     static Cipher(input, key, Nk, Nr){
         input = roteteArray(input);
         //key = roteteArray(key);
-        /*
-            input -> [4*Nb]
-            output -> [4*Nb] (return)
-            w -> [Nb*(Nr+1)]
-        */
-
-        let wOld = this.KeyExpansion(key, Nk, Nr);
-        /*console.log('moje w:', w);
-        let tmpArrxd = [];
-        for(let i = 0; i < w.length; i += 1){
-            let tmp = 0;
-            for(let j = 0; j < w[i].length; ++j){
-                tmp = tmp << 8 | w[i].get1d(j);
-            }
-            
-            if(i % 4 === 0){
-                tmpArrxd.push([]);
-            }
-            tmpArrxd[Math.floor(i/4)].push(tmp);
-        }
-        console.log(tmpArrxd);*/
-        //===
-        //let w = wOld;
-        let w = [];
-        for(let i = 0; i < wOld.length; i += 4){
-            let tmp = [];
-            
-            for(let zm2 = 0; zm2 < 4; ++zm2){
-                for(let zm1 = 0; zm1 < 4; ++zm1){
-                    tmp.push(wOld[i + zm1][zm2]);
-                }
-            }
-            
-            w.push(tmp);
-        }
-        //console.log('moje w:', w);
         
+        let w = this.KeyExpansion(key, Nk, Nr);
+                
         let state = input;
-        /*console.log('Before rot', 0);
-        print1dArrayAs2d(state);
-        //rotate state
-        for(let j = 1; j <= 3; ++j){
-            for(let i = 0; i < j; ++i){
-                let tmpA = state[ rcTo1d(i, j) ];
-                let tmpB = state[ rcTo1d(j, i) ];
-                state[ rcTo1d(j, i) ] = tmpA;
-                state[ rcTo1d(i, j) ] = tmpB;
-            }
-        }*/
-        //console.log('Before round', 0);
-        //print1dArrayAs2d(state);
 
-        //debugger;
         state = this.AddRoundKey(state, w, 0);
-        //console.log('After round', 0);
-        //print1dArrayAs2d(state);
-
+        
         for(let round = 1; round <= Nr-1; ++round){
             state = this.SubBytes(state);
             state = this.ShiftRows(state);
             state = this.MixColumns(state);
             state = this.AddRoundKey(state, w, round);
-            
-            //console.log('After round', round);
-            //print1dArrayAs2d(state);
         }
 
         state = this.SubBytes(state);
         state = this.ShiftRows(state);
         state = this.AddRoundKey(state, w, Nr);
-        //console.log('After round', Nr);
-        //print1dArrayAs2d(state);
 
         let output = roteteArray(state);
         return output;
     }
 
     static encrypt(pt_string, key_string){
-        /*
-        console.log('====TEST=====');
-        this.sbox.print2d(16);
-        //console.log( this.sbox.get2d( 5, 3 ).toString(16) );
-        //let data = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'];
-        let data = BitConverter.fromString("ABCDEFGHIJKLMNOP");
-        let tmpState = AnyDimArray.from1d(data.bytes(), 4);
-        
-        console.log(data.bytes());
-        tmpState.print2d();
-        tmpState = this.ShiftRows(tmpState, 4);
-        tmpState.print2d();
-        return;
-        console.log('=============');
-        */
-        
         let key = BitConverter.fromString(key_string);
         let pt = BitConverter.fromString(pt_string);
+
+        key.addPadding(16);
+        pt.addPadding(16);
 
         //determine number of rounds
         let Nk = 0;
@@ -362,16 +211,7 @@ class AES{
 
         let output = this.Cipher(pt.bytes(), key.bytes(), Nk, Nr);
         //let ct = BitConverter.fromBytes(output);
-        let ct = output;
-
-        /*console.log('===AES===');
-        console.log('pt:');
-        print1dArrayAs2d(pt.bytes());        
-        console.log('key:');
-        print1dArrayAs2d(key.bytes());
-        console.log('ct:');
-        print1dArrayAs2d(ct.bytes());*/
-        
+        let ct = output;       
         
         return ct;
     }

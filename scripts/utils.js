@@ -49,6 +49,15 @@ class BitConverter{
     }
 
     //==============================================
+    addPadding(padding, func = (i, toAdd) => {return 0;}){
+        let toAdd = (padding - (this.bytesData.length % padding)) % padding;
+        for(let i = 0; i < toAdd; ++i){
+            this.bytesData.push(
+                func(i, toAdd)
+            );
+        }
+    }
+    //==============================================
 
     string(){
         let ret = "";
@@ -67,7 +76,7 @@ class BitConverter{
     bits(){
         let ret = [];
         let bytes = this.bytes();
-
+        
         for (let i = 0; i < bytes.length; ++i) {
             for(let j = 7; j >= 0; --j){
                 ret.push( (bytes[i] & (1<<j)) >> j );
@@ -100,110 +109,6 @@ class BitConverter{
 }
 
 //=======================================================================
-
-// /**
-//  * Allows the array to be accessed as 1 dimensional one or 2 dimensional one
-//  */
-// class AnyDimArray{
-//     arr1d = [];
-//     width = 0;
-
-//     static from1d(arr1d, widthFor2d = 0){
-//         let ret = new AnyDimArray();
-//         ret.arr1d = arr1d;
-//         ret.width = widthFor2d;
-//         if(ret.width == 0){
-//             ret.width = Math.sqrt(ret.length);
-//         }
-//         return ret;
-//     }
-//     static copy(anyDimArray){
-//         return AnyDimArray.from1d(anyDimArray.arr1d.slice(), anyDimArray.width);
-//     }
-    
-//     /*static from2D(arr2d){
-//         let ret = new AnyDimArray();
-//         ret.arr1d = [];
-        
-//         return ret;
-//     }*/
-
-//     get1d(x){
-//         return this.arr1d[x];
-//     }
-//     set1d(value, x){
-//         this.arr1d[x] = value;
-//     }
-
-//     get2d(y, x, width=this.width){
-//         return this.arr1d[x + y*width];
-//     }
-//     set2d(value, y, x, width=this.width){
-//         this.arr1d[x + y*width] = value;
-//     }
-//     //=======
-//     /*getXY(x, y, width=this.width){
-//         return this.arr1d[x + y*width];
-//     }
-//     setXY(value, x, y, width=this.width){
-//         this.arr1d[x + y*width] = value;
-//     }
-//     getRC(r, c, width=this.width){
-//         return this.arr1d[x + y*width];
-//     }
-//     setRC(value, r, c, width=this.width){
-//         this.arr1d[x + y*width] = value;
-//     }*/
-
-//     get length(){
-//         return this.arr1d.length;
-//     }
-//     get width(){
-//         return this.width;
-//     }
-//     get height(){
-//         return Math.ceil(this.arr1d.length / this.width);
-//     }
-
-//     print1d(base=10){
-//         let str2print = "";
-//         for(let i = 0; i < this.length; ++i){
-//             str2print += " " + this.get1d(i).toString(base);
-//         }
-//         console.log(str2print);
-//     }
-//     print2d(base=10, width = this.width){
-//         let str2print = "";
-//         for(let i = 0; i < width; ++i){
-//             for(let j = 0; j < this.height; ++j){
-//                 str2print += " " + this.get2d(j, i).toString(base);
-//             }
-//             str2print += "\n";
-//         }
-//         console.log(str2print);
-//     }
-
-//     //==========
-
-//     static xor(a, b){
-//         if(a.length != b.length){
-//             throw Error("Cannot XOR: a.length != b.length");
-//         }
-
-//         let ret = AnyDimArray.copy(a);
-//         for(let i = 0; i < ret.length; ++i){
-//             let tmp = a.get1d(i) ^ b.get1d(i);
-//             tmp &= 0xff;
-//             ret.set1d(tmp, i);
-//         }
-
-//         return ret;
-//     }
-// }
-
-//=======================================================================
-
-
 
 /**
  * Returns a copy of the array. By value not by reference
@@ -352,45 +257,3 @@ function print1dArrayAs2d(array, base=16, width=default2dWidth){
     }
     console.log(str2print);
 }
-function print1dArrayAs2dOLD(arrayRot, base=16, width=default2dWidth){
-    let array = copyArray(arrayRot);
-    //rotate
-    for(let j = 1; j <= 3; ++j){
-        for(let i = 0; i < j; ++i){
-            let tmpA = array[ rcTo1d(i, j) ];
-            let tmpB = array[ rcTo1d(j, i) ];
-            array[ rcTo1d(j, i) ] = tmpA;
-            array[ rcTo1d(i, j) ] = tmpB;
-        }
-    }
-
-    let str2print = "";
-    for(let i = 0; i < array.length; ++i){
-        if(i != 0){
-            if(i % width == 0)
-                str2print += "\n";
-            else
-                str2print += " ";
-        }
-        str2print += array[i].toString(base);
-    }
-    console.log(str2print);
-}
-
-
-
-/*
-function array1Dto2D(array, width){
-    let ret = [];
-    let height = Math.ceil(array.length / width);
-
-    for(let i = 0; i < width; ++i){
-        ret[i] = [];
-        for(let j = 0; j < height; ++j){
-            ret[i][j] = array[i + j*width] || 0;
-        }
-    }
-
-    return ret;
-}
-*/
