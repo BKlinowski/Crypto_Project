@@ -1,3 +1,9 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 :root {
   --background-color: #e7e7de;
   --textarea-color: #e5e5e5;
@@ -5,13 +11,14 @@
   --menu-background-color: #00587a;
   --menu-item-color: #006e75;
   --menu-subitem-color: #008891;
+  --menu-subitem-color-hover: #00757e;
+  --textarea-margins: 15px;
 }
 
 body {
   font-family: "Roboto", sans-serif;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
   background-color: var(--background-color);
 }
 

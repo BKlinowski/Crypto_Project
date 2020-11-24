@@ -1,0 +1,41 @@
+.TextArea {
+  resize: none;
+  width: calc(100% - (var(--textarea-margins) * 2));
+  height: calc(100% - (var(--textarea-margins) * 2));
+  margin: 0 var(--textarea-margins) var(--textarea-margins) var(--textarea-margins);
+  background-color: var(--textarea-color);
+  border: 2px solid var(--textarea-stroke);
+  border-top: none;
+  font-family: inherit;
+  padding: 10px;
+  font-size: 24px;
+}
+
+.TextArea:focus {
+  outline: none;
+}
+
+.Div {
+  display: flex;
+  flex-direction: column;
+}
+
+.ParagraphContainer {
+  width: calc(100% - (var(--textarea-margins) * 2));
+  border: 2px solid var(--textarea-stroke);
+  background-color: var(--textarea-color);
+  border-bottom: none;
+  padding: 10px;
+  margin: var(--textarea-margins) var(--textarea-margins) 0 var(--textarea-margins);
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.Paragraph {
+  font-size: 24px;
+  font-family: inherit;
+  width: 90%;
+  display: block;
+  border-bottom: 1px solid black;
+}

@@ -1,6 +1,6 @@
 .NavigationSubitem {
   width: 90%;
-  height: 81px;
+  height: 61px;
   background-color: var(--menu-subitem-color);
   border-bottom: 2px solid black;
   display: flex;
@@ -8,7 +8,30 @@
   align-items: center;
 }
 
+.NavigationSubitem a:hover {
+  color: black;
+  background-color: var(--menu-subitem-color-hover);
+  cursor: pointer;
+}
+
+.NavigationSubitem:hover {
+  border-bottom-color: white;
+}
+
 .Text {
   color: white;
   font-size: 48px;
+}
+
+.NavigationSubitem a {
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.NavigationSubitem a.active {
+  background-color: var(--menu-subitem-color-hover);
 }

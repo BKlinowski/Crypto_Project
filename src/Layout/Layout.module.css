@@ -1,0 +1,7 @@
+.Layout {
+  display: flex;
+}
+
+.Layout main {
+  width: 100%;
+}
