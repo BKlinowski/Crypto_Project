@@ -4,11 +4,11 @@ import { Route, Switch, withRouter } from "react-router-dom";
 import React, { Suspense } from "react";
 
 const AES = React.lazy(() => {
-  return import("./components/CipherFunctions/AES/AES");
+  return import("./containers/CipherFunctions/AES/AES");
 });
 
 const SHA256 = React.lazy(() => {
-  return import("./components/HashFunctions/SHA256/SHA256");
+  return import("./containers/HashFunctions/SHA256/SHA256");
 });
 
 function App() {

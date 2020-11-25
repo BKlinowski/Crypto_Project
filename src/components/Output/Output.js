@@ -1,16 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
 
 import styles from "./Output.module.css";
 
-const output = (props) => {
+const Output = (props) => {
   return (
     <div className={styles.Div}>
       <div className={styles.ParagraphContainer}>
         <p className={styles.Paragraph}>Output</p>
       </div>
-      <textarea readOnly className={styles.TextArea}></textarea>
+      <textarea value={props.result} readOnly className={styles.TextArea}></textarea>
     </div>
   );
 };
 
-export default output;
+export default Output;

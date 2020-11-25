@@ -9,8 +9,8 @@ import styles from "./DefaultMain.module.css";
 const defaultMain = (props) => {
   return (
     <div className={styles.DefaultMain}>
-      <Input />
-      <Output />
+      <Input onTextAreaChange={props.onTextAreaChange} areaValue={props.areaValue} max={props.max} />
+      <Output result={props.result} />
       <Options>{props.children}</Options>
     </div>
   );

@@ -13,6 +13,10 @@
   --menu-subitem-color: #008891;
   --menu-subitem-color-hover: #00757e;
   --textarea-margins: 15px;
+  --input-background: #cecece;
+  --input-stroke: #646464;
+  --danger: #dc3545;
+  --success: #28a745;
 }
 
 body {
