@@ -1,0 +1,48 @@
+.Container {
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+}
+
+.Input {
+  font-family: inherit;
+  font-size: 24px;
+  border: 1px solid var(--input-stroke);
+  background-color: var(--input-background);
+}
+.InputKeySize {
+  width: 30%;
+}
+.InputButton {
+  width: 70%;
+  min-width: 10rem;
+  display: inline;
+  margin: 0 auto;
+}
+
+.Label {
+  justify-self: center;
+  display: inline;
+}
+
+.ButtonSuccess {
+  background-color: var(--success);
+}
+
+.ButtonDanger {
+  background-color: var(--danger);
+}
+
+.Button {
+  grid-column: span 2;
+  margin-top: 10px;
+  width: 100%;
+  justify-self: center;
+  font-family: inherit;
+  font-size: 24px;
+  outline: none;
+  padding: 5px;
+}
+
+.Button:hover {
+  cursor: pointer;
+}

@@ -7,6 +7,10 @@ const AES = React.lazy(() => {
   return import("./containers/CipherFunctions/AES/AES");
 });
 
+const RSA = React.lazy(() => {
+  return import("./containers/CipherFunctions/RSA/RSA");
+});
+
 const SHA256 = React.lazy(() => {
   return import("./containers/HashFunctions/SHA256/SHA256");
 });
@@ -15,6 +19,7 @@ function App() {
   let routes = (
     <Switch>
       <Route path="/AES" render={(props) => <AES {...props} />} />
+      <Route path="/RSA" render={(props) => <RSA {...props} />} />
       <Route path="/SHA256" render={(props) => <SHA256 {...props} />} />
     </Switch>
   );

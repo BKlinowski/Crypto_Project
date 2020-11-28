@@ -16,15 +16,11 @@
 
 import { BitConverter } from "../scripts/utils";
 
+function BigInt(x){
+    return window.BigInt(x);
+}
 class RSA{
 
-    /*function randomBigInt_primeOpt(sizeInBytes = 512){
-        let ret = 0n;
-
-        return 2n ** randomBigInt(3) * randomBigInt(3) - 1;
-
-        return ret;
-    }*/
     static randomBigInt(sizeInBytes = 32){
         let ret = 0n;
 
