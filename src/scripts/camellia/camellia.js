@@ -93,36 +93,44 @@ class Camellia {
   }
 
   flFunction(bits64, subKey64) {
-    subKey64 = subKey64.flat();
-    const Yr = Utils.XOR(Utils.rotLeft(Utils.AND(bits64.slice(0, 32), subKey64.slice(0, 32)), 1), bits64.slice(32, 64));
-    const Yl = Utils.XOR(Utils.OR(Yr, subKey64.slice(32, 64)), bits64.slice(0, 32));
+    let bits64Copy = [...bits64];
+    let subKey64Copy = [...subKey64];
+    subKey64Copy = subKey64Copy.flat();
+    const Yr = Utils.XOR(Utils.rotLeft(Utils.AND(bits64Copy.slice(0, 32), subKey64Copy.slice(0, 32)), 1), bits64Copy.slice(32, 64));
+    const Yl = Utils.XOR(Utils.OR(Yr.slice(), subKey64Copy.slice(32, 64)), bits64Copy.slice(0, 32));
     return [Yl, Yr].flat();
   }
 
   flReverseFunction(bits64, subKey64) {
-    subKey64 = subKey64.flat();
-    const YRl = Utils.XOR(Utils.OR(bits64.slice(32, 64), subKey64.slice(32, 64)), bits64.slice(0, 32));
-    const YRr = Utils.XOR(Utils.rotLeft(Utils.AND(YRl, subKey64.slice(0, 32)), 1), bits64.slice(32, 64));
+    let bits64Copy = [...bits64];
+    let subKey64Copy = [...subKey64];
+    subKey64Copy = subKey64Copy.flat();
+    // console.log("ANDDDDDDD: ", Utils.AND([1, 1, 0, 0], [1, 0, 1, 0]));
+    const YRl = Utils.XOR(Utils.OR(bits64Copy.slice(32, 64), subKey64Copy.slice(32, 64)), bits64Copy.slice(0, 32));
+    const YRr = Utils.XOR(Utils.rotLeft(Utils.AND(YRl.slice(), subKey64Copy.slice(0, 32)), 1), bits64Copy.slice(32, 64));
     return [YRl, YRr].flat();
   }
 
   sixRoundFunction(left, right, subkeys) {
+    let leftCopy = [...left];
+    let rightCopy = [...right];
     let newLeft,
       newRight = null;
     for (let i = 0; i < 6; i++) {
-      newLeft = Utils.XOR(this.fFunction(left, subkeys[i]), right);
-      newRight = left;
-      left = newLeft;
-      right = newRight;
+      newLeft = Utils.XOR(this.fFunction(leftCopy, subkeys[i]), rightCopy);
+      newRight = leftCopy;
+      leftCopy = newLeft;
+      rightCopy = newRight;
       /*  console.log(`SixRound number ${i} - 
       left: ${left}
       right: ${right}`); */
     }
-    return [left, right];
+    return [leftCopy, rightCopy];
   }
 
   encrypt(plaintext) {
     let plaintextInBits = new Utils(plaintext, "");
+    console.log(plaintextInBits);
     plaintextInBits = plaintextInBits.bits;
     const padLength = 128 - plaintextInBits.length;
     for (let i = 0; i < padLength; i++) {
@@ -133,7 +141,7 @@ class Camellia {
 
     left = Utils.XOR(left, this.kwkeys[0]);
     right = Utils.XOR(right, this.kwkeys[1]);
-
+    console.log(this.kwkeys);
     for (let i = 0; i < 4; i++) {
       console.log(left, right);
       [left, right] = this.sixRoundFunction(left, right, this.subkeys.slice(i * 6, (i + 1) * 6));
@@ -150,10 +158,11 @@ class Camellia {
     newRight = Utils.XOR(this.kwkeys[3], left);
 
     let finalText = [newLeft, newRight].flat();
+    console.log("FINAL TEXT: ", finalText);
     // console.log(finalText);
     finalText = Utils.bin2hex(finalText);
     // finalText = Utils.hexToString(finalText);
-
+    console.log(this.kwkeys);
     return finalText;
   }
 
@@ -207,7 +216,7 @@ class Camellia {
       right = newRight;
     }
     let firstOperation = [[...newLeft], [...newRight]].flat();
-    firstOperation = Utils.XOR(firstOperation, klCopy);
+    firstOperation = Utils.XOR([...firstOperation], klCopy);
     left = firstOperation.slice(0, 64);
     right = firstOperation.slice(64, 128);
     for (let i = 0; i < 2; i++) {
@@ -222,8 +231,6 @@ class Camellia {
     Kb = Utils.XOR([...Ka], krCopy);
     left = Kb.slice(0, 64);
     right = Kb.slice(64, 128);
-    left = firstOperation.slice(0, 64);
-    right = firstOperation.slice(64, 128);
     for (let i = 0; i < 2; i++) {
       newLeft = Utils.XOR(this.fFunction(left, this["sigma" + (i + 5).toString()]), right);
       newRight = left;
@@ -250,6 +257,7 @@ class Camellia {
   pFunction(bits64) {
     const yTab = [];
     const bits64Copy = [...bits64];
+    // console.log("P FUNCTION: ", bits64Copy);
     /*     const bytes = [];
     for (let i = 0; i < 8; i++) {
       bytes.push(bits64Copy.slice(i * 8, (i + 1) * 8));
@@ -283,16 +291,23 @@ class Camellia {
     }
     // console.log("S Function: ", bits64, bits8);
     const sBox = [112, 130, 44, 236, 179, 39, 192, 229, 228, 133, 87, 53, 234, 12, 174, 65, 35, 239, 107, 147, 69, 25, 165, 33, 237, 14, 79, 78, 29, 101, 146, 189, 134, 184, 175, 143, 124, 235, 31, 206, 62, 48, 220, 95, 94, 197, 11, 26, 166, 225, 57, 202, 213, 71, 93, 61, 217, 1, 90, 214, 81, 86, 108, 77, 139, 13, 154, 102, 251, 204, 176, 45, 116, 18, 43, 32, 240, 177, 132, 153, 223, 76, 203, 194, 52, 126, 118, 5, 109, 183, 169, 49, 209, 23, 4, 215, 20, 88, 58, 97, 222, 27, 17, 28, 50, 15, 156, 22, 83, 24, 242, 34, 254, 68, 207, 178, 195, 181, 122, 145, 36, 8, 232, 168, 96, 252, 105, 80, 170, 208, 160, 125, 161, 137, 98, 151, 84, 91, 30, 149, 224, 255, 100, 210, 16, 196, 0, 72, 163, 247, 117, 219, 138, 3, 230, 218, 9, 63, 221, 148, 135, 92, 131, 2, 205, 74, 144, 51, 115, 103, 246, 243, 157, 127, 191, 226, 82, 155, 216, 38, 200, 55, 198, 59, 129, 150, 111, 75, 19, 190, 99, 46, 233, 121, 167, 140, 159, 110, 188, 142, 41, 245, 249, 182, 47, 253, 180, 89, 120, 152, 6, 106, 231, 70, 113, 186, 212, 37, 171, 66, 136, 162, 141, 250, 114, 7, 185, 85, 248, 238, 172, 10, 54, 73, 42, 104, 60, 56, 241, 164, 64, 40, 211, 123, 187, 201, 67, 193, 21, 227, 173, 244, 119, 199, 128, 158];
-
-    yTab[0] = Utils.numberToBits(sBox[Utils.bitsToNumber(bits8[0])], 8);
-    yTab[1] = Utils.rotLeft(Utils.numberToBits(sBox[Utils.bitsToNumber(bits8[1])], 8), 1);
-    yTab[2] = Utils.rotRight(Utils.numberToBits(sBox[Utils.bitsToNumber(bits8[2])], 8), 1);
-    yTab[3] = Utils.numberToBits(sBox[Utils.bitsToNumber(Utils.rotLeft(bits8[3], 1))], 8);
-    yTab[4] = Utils.rotLeft(Utils.numberToBits(sBox[Utils.bitsToNumber(bits8[4])], 8), 1);
-    yTab[5] = Utils.rotRight(Utils.numberToBits(sBox[Utils.bitsToNumber(bits8[5])], 8), 1);
-    yTab[6] = Utils.numberToBits(sBox[Utils.bitsToNumber(Utils.rotLeft(bits8[6], 1))], 8);
-    yTab[7] = Utils.numberToBits(sBox[Utils.bitsToNumber(bits8[7])], 8);
-
+    // console.log("TEST: ", Utils.numberToBits(sBox[142 - 1], 8), sBox[142 - 1]);
+    let index = Utils.bitsToNumber(bits8[0]);
+    yTab[0] = Utils.numberToBits(sBox[index], 8);
+    index = Utils.bitsToNumber(bits8[1]);
+    yTab[1] = Utils.rotLeft(Utils.numberToBits(sBox[index], 8), 1);
+    index = Utils.bitsToNumber(bits8[2]);
+    yTab[2] = Utils.rotRight(Utils.numberToBits(sBox[index], 8), 1);
+    index = Utils.bitsToNumber(Utils.rotLeft(bits8[3], 1));
+    yTab[3] = Utils.numberToBits(sBox[index], 8);
+    index = Utils.bitsToNumber(bits8[4]);
+    yTab[4] = Utils.rotLeft(Utils.numberToBits(sBox[index], 8), 1);
+    index = Utils.bitsToNumber(bits8[5]);
+    yTab[5] = Utils.rotRight(Utils.numberToBits(sBox[index], 8), 1);
+    index = Utils.bitsToNumber(Utils.rotLeft(bits8[6], 1));
+    yTab[6] = Utils.numberToBits(sBox[index], 8);
+    index = Utils.bitsToNumber(bits8[7]);
+    yTab[7] = Utils.numberToBits(sBox[index], 8);
     return yTab;
   }
 }
