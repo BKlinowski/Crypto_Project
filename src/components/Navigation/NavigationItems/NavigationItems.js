@@ -10,9 +10,8 @@ const navigationItems = (props) => {
         <NavigationItem text="Ciphers" />
         <ul className={styles.Items}>
           <NavigationSubitem link="/AES" text="AES" />
-        </ul>
-        <ul className={styles.Items}>
           <NavigationSubitem link="/RSA" text="RSA" />
+          <NavigationSubitem link="/Camellia" text="Camellia" />
         </ul>
       </div>
       <div className={styles.Submenu}>

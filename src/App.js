@@ -15,12 +15,17 @@ const SHA256 = React.lazy(() => {
   return import("./containers/HashFunctions/SHA256/SHA256");
 });
 
+const Camellia = React.lazy(() => {
+  return import("./containers/CipherFunctions/Camellia/Camellia");
+});
+
 function App() {
   let routes = (
     <Switch>
       <Route path="/AES" render={(props) => <AES {...props} />} />
       <Route path="/RSA" render={(props) => <RSA {...props} />} />
       <Route path="/SHA256" render={(props) => <SHA256 {...props} />} />
+      <Route path="/Camellia" render={(props) => <Camellia {...props} />} />
     </Switch>
   );
 

@@ -9,7 +9,7 @@ import styles from "./DefaultMain.module.css";
 const defaultMain = (props) => {
   return (
     <div className={styles.DefaultMain}>
-      <Input onTextAreaChange={props.onTextAreaChange} areaValue={props.areaValue} max={props.max} />
+      <Input onTextAreaChange={props.onTextAreaChange} areaValue={props.areaValue} max={props.max ? props.max : null} />
       <Output result={props.result} />
       <Options>{props.children}</Options>
     </div>
