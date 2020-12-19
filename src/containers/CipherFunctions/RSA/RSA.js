@@ -34,9 +34,9 @@ const RSA = (props) => {
       ||  key.split(',').length != 2
     ) {
       if(switchMode){
-        setRSAResult("Bad key format. Should be: (e, n).");
+        setRSAResult("Bad key format. Should be: (n, e).");
       }else{
-        setRSAResult("Bad key format. Should be: (d, n).");
+        setRSAResult("Bad key format. Should be: (n, d).");
       }
     } else {
       if (switchMode) {
@@ -47,11 +47,11 @@ const RSA = (props) => {
         }
       } else {
         try {
+          console.log("areaValue:", areaValue);
           setRSAResult(
             rsaFunction.decrypt(
               areaValue
                 .split(",")
-                .map((char) => +char)
                 .flat(),
               key
             )
