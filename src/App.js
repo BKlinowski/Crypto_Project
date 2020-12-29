@@ -19,6 +19,10 @@ const Camellia = React.lazy(() => {
   return import("./containers/CipherFunctions/Camellia/Camellia");
 });
 
+const Chacha20 = React.lazy(() => {
+  return import("./containers/CipherFunctions/Chacha20/Chacha20");
+});
+
 function App() {
   let routes = (
     <Switch>
@@ -26,6 +30,7 @@ function App() {
       <Route path="/RSA" render={(props) => <RSA {...props} />} />
       <Route path="/SHA256" render={(props) => <SHA256 {...props} />} />
       <Route path="/Camellia" render={(props) => <Camellia {...props} />} />
+      <Route path="/Chacha20" render={(props) => <Chacha20 {...props} />} />
     </Switch>
   );
 
