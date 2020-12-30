@@ -23,6 +23,14 @@ const Chacha20 = React.lazy(() => {
   return import("./containers/CipherFunctions/Chacha20/Chacha20");
 });
 
+const BlowFish = React.lazy(() => {
+  return import("./containers/CipherFunctions/BlowFish/BlowFish");
+});
+
+const TwoFish = React.lazy(() => {
+  return import("./containers/CipherFunctions/TwoFish/TwoFish");
+});
+
 function App() {
   let routes = (
     <Switch>
@@ -31,6 +39,8 @@ function App() {
       <Route path="/SHA256" render={(props) => <SHA256 {...props} />} />
       <Route path="/Camellia" render={(props) => <Camellia {...props} />} />
       <Route path="/Chacha20" render={(props) => <Chacha20 {...props} />} />
+      <Route path="/BlowFish" render={(props) => <BlowFish {...props} />} />
+      <Route path="/TwoFish" render={(props) => <TwoFish {...props} />} />
     </Switch>
   );
 

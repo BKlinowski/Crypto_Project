@@ -13,6 +13,8 @@ const navigationItems = (props) => {
           <NavigationSubitem link="/RSA" text="RSA" />
           <NavigationSubitem link="/Camellia" text="Camellia" />
           <NavigationSubitem link="/Chacha20" text="Chacha20" />
+          <NavigationSubitem link="/BlowFish" text="BlowFish" />
+          <NavigationSubitem link="/TwoFish" text="TwoFish" />
         </ul>
       </div>
       <div className={styles.Submenu}>
