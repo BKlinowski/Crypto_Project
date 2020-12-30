@@ -11,12 +11,12 @@ const BlowFish = (props) => {
   const [inputValue, setInputValue] = useState("");
   const [switchMode, setSwitchMode] = useState(true);
   const [buttonText, setButtonText] = useState("Current: encryption");
-  const [areaMaxVal, setAreaMaxVal] = useState(16);
+  const [areaMaxVal, setAreaMaxVal] = useState(8);
   // const [encTimeout, setEncTimeout] = useState(null);
 
   useEffect(() => {
-    if (inputValue.length !== 16) {
-      setBlowFishResult("Key must be 16 characters length!");
+    if (inputValue.length < 4 || inputValue.length > 56) {
+      setBlowFishResult("Key must be 4-56 characters length!");
     } else {
       if (switchMode) {
         try {
@@ -52,12 +52,12 @@ const BlowFish = (props) => {
 
   const onButtonClick = () => {
     if (!switchMode) {
-      setAreaMaxVal(16);
+      setAreaMaxVal(8);
       setAreaValue("");
       setBlowFishResult("");
       setButtonText("Current: encryption");
     } else {
-      setAreaMaxVal(64);
+      setAreaMaxVal();
       setAreaValue("");
       setBlowFishResult("");
       setButtonText("Current: decryption");
