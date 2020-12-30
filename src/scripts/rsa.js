@@ -14,7 +14,7 @@
  * https://incolumitas.com/2018/08/12/finding-large-prime-numbers-and-rsa-miller-rabin-test/
  */
 
-import { BitConverter } from "../scripts/utils";
+import { BitConverter } from "./bitUtils";
 
 function BigInt(x) {
   return window.BigInt(x);
