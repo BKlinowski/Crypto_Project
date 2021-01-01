@@ -18,24 +18,20 @@ const RSA = (props) => {
   useEffect(() => {
     let key = inputValue;
 
-    let pubOrPriv = (switchMode ? 'Public' : 'Private');
-    if(key.indexOf(pubOrPriv) >= 0){
-      key = key.substr( key.indexOf(pubOrPriv)+1 );
-      key = key.substr( key.indexOf("\n")+1 );
-      key = key.substr( 0, key.indexOf("\n") );
+    let pubOrPriv = switchMode ? "Public" : "Private";
+    if (key.indexOf(pubOrPriv) >= 0) {
+      key = key.substr(key.indexOf(pubOrPriv) + 1);
+      key = key.substr(key.indexOf("\n") + 1);
+      key = key.substr(0, key.indexOf("\n"));
     }
 
-    key = key.substr(key.indexOf('('));
-    key = key.substr(0, key.lastIndexOf(')') + 1);
+    key = key.substr(key.indexOf("("));
+    key = key.substr(0, key.lastIndexOf(")") + 1);
 
-    if (
-      key[0] != '(' 
-      || key[key.length-1] != ')'
-      ||  key.split(',').length != 2
-    ) {
-      if(switchMode){
+    if (key[0] != "(" || key[key.length - 1] != ")" || key.split(",").length != 2) {
+      if (switchMode) {
         setRSAResult("Bad key format. Should be: (e, n).");
-      }else{
+      } else {
         setRSAResult("Bad key format. Should be: (d, n).");
       }
     } else {
@@ -67,7 +63,7 @@ const RSA = (props) => {
     setAreaValue(event.target.value);
   };
 
-  const onKeyGenClick = (event) => { 
+  const onKeyGenClick = (event) => {
     let keys = rsaFunction.generateKeys(parseInt(keyLenValue));
     let value = "Private:\n";
     value += keys.private + "\n";
