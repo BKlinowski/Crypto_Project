@@ -14,7 +14,7 @@
  * https://incolumitas.com/2018/08/12/finding-large-prime-numbers-and-rsa-miller-rabin-test/
  */
 
-import { BitConverter } from "../scripts/utils";
+import { BitConverter } from "./bitUtils";
 
 function BigInt(x) {
   return window.BigInt(x);
@@ -106,7 +106,6 @@ class RSA {
     if (number == 1) return false;
     if (number == 2) return true;
 
-    //let sqrtOfNumber = Math.floor(Math.sqrt(number));
     let half = number / 2n;
     for (let i = 2n; i <= half; ++i) {
       if (number % i == 0) {
@@ -121,15 +120,6 @@ class RSA {
     } else {
       return this.nwd(b, a % b);
     }
-  }
-  static znajdzDrugaNieparzystaWzgledniePierwsza(firstNumber, max = 100n) {
-    for (let i = 3n; i < max; i += 2n) {
-      if (this.nwd(firstNumber, i) == 1n) {
-        return i;
-      }
-    }
-
-    return null;
   }
   static modInverse(a, b) {
     let u = 1n;
@@ -159,67 +149,32 @@ class RSA {
   static generateKeys(keyLenInBits = 256) {
     let primeLenInBytes = keyLenInBits / 8 / 2;
 
-    //mt_srand(6);
-    let p = 0;
-    let q = 0;
+    let p = this.randomBigInt(primeLenInBytes);
+    let q = this.randomBigInt(primeLenInBytes);
 
-    // do p = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-    // while(!isPrime(p));
-    // do q = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-    // while(!isPrime(q));
-
-    //p = Math.floor(Math.random() * 1000000);
-    p = this.randomBigInt(primeLenInBytes);
-    q = this.randomBigInt(primeLenInBytes);
-    //q = Math.floor(Math.random() * 1000000);
     let howmany = 0;
-    let timeout = 0;
     while (!this.miller_rabin_primality_test(p)) {
       p = this.randomBigInt(primeLenInBytes);
       console.log(p);
       howmany++;
-      //console.log('t=', ++timeout);
     }
-    timeout = 0;
+    
     while (!this.miller_rabin_primality_test(q)) {
       q = this.randomBigInt(primeLenInBytes);
       console.log(q);
       howmany++;
-      //console.log('t=', ++timeout);
     }
 
-    //console.log();
-
-    //$p = 13;
-    //$q = 11;
     console.log(howmany);
     let n = p * q;
     let fi = (p - 1n) * (q - 1n);
 
-    let e = this.znajdzDrugaNieparzystaWzgledniePierwsza(fi, n);
-
+    let e = 65537n;
     let d = this.modInverse(e, fi);
 
-    /*console.log("===RSA===");
-        console.log("p: " + p);
-        console.log("q: " + q);
-        console.log("_");
-        console.log("n: " + (n));
-        console.log("fi: " + (fi));
-        console.log("_");
-        console.log("e: " + (e));
-        console.log("d: " + (d));
-        console.log("_");
-        console.log("nwd(e, fi) = " + nwd(e, fi));
-        console.log("================");
-        console.log("_");
-        console.log("_");
-
-        console.log(`Klucz publiczny: );
-        console.log(`Klucz prywatny: (${d}, ${n})`);*/
     return {
-      public: `(${e}, ${n})`,
-      private: `(${d}, ${n})`,
+      public: `(${n}, ${e})`,
+      private: `(${n}, ${d})`,
     };
   }
 
@@ -235,11 +190,10 @@ class RSA {
 
     key = key.substr(1, key.length - 2);
     key = key.split(", ");
-    let keyE = BigInt(key[0]);
-    let keyN = BigInt(key[1]);
+    let keyN = BigInt(key[0]);
+    let keyE = BigInt(key[1]);
 
     for (let b of messageBytes) {
-      //tmp = Math.pow( b, keyE ) % keyN;
       let tmp = this.powerModulo(BigInt(b), keyE, keyN);
       output.push(tmp);
     }
@@ -254,17 +208,17 @@ class RSA {
    * @returns {string} plaintext as string
    */
   static decrypt(ciphertext, key) {
+    console.log(ciphertext, key);
     let ciphertextBytes = ciphertext;
     let output = [];
 
     key = key.substr(1, key.length - 2);
     key = key.split(", ");
-    let keyE = BigInt(key[0]);
-    let keyN = BigInt(key[1]);
+    let keyN = BigInt(key[0]);
+    let keyD = BigInt(key[1]);
 
     for (let b of ciphertextBytes) {
-      //tmp = Math.pow( b, keyE ) % keyN;
-      let tmp = this.powerModulo(BigInt(b), keyE, keyN);
+      let tmp = this.powerModulo(BigInt(b), keyD, keyN);
       output.push(Number(tmp));
     }
     //c = t^e mod n

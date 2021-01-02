@@ -12,12 +12,16 @@ const navigationItems = (props) => {
           <NavigationSubitem link="/AES" text="AES" />
           <NavigationSubitem link="/RSA" text="RSA" />
           <NavigationSubitem link="/Camellia" text="Camellia" />
+          <NavigationSubitem link="/Chacha20" text="Chacha20" />
+          <NavigationSubitem link="/BlowFish" text="BlowFish" />
+          <NavigationSubitem link="/TwoFish" text="TwoFish" />
         </ul>
       </div>
       <div className={styles.Submenu}>
         <NavigationItem text="Hash" />
         <ul className={styles.Items}>
           <NavigationSubitem link="/SHA256" text="SHA-256" />
+          <NavigationSubitem link="/MD5" text="MD5" />
         </ul>
       </div>
     </div>
