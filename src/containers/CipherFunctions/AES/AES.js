@@ -4,14 +4,15 @@ import DefaultMain from "../../../components/DefaultMain/DefaultMain";
 import OptionAES from "../../../components/Options/Option/OptionAES/OptionAES";
 
 import aesFunction from "../../../scripts/aes";
+import modeOfOperation from "../../../scripts/ModeOfOperation";
 
 const AES = (props) => {
   const [areaValue, setAreaValue] = useState("");
   const [aesResult, setAESResult] = useState("");
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState("AAAABBBBCCCCDDDD");
   const [switchMode, setSwitchMode] = useState(true);
   const [buttonText, setButtonText] = useState("Current: encryption");
-  const [areaMaxVal, setAreaMaxVal] = useState(16);
+  const [areaMaxVal, setAreaMaxVal] = useState();
   // const [encTimeout, setEncTimeout] = useState(null);
 
   useEffect(() => {
@@ -20,19 +21,34 @@ const AES = (props) => {
     } else {
       if (switchMode) {
         try {
-          setAESResult(aesFunction.encrypt(areaValue, inputValue));
+          setAESResult(
+            modeOfOperation.encrypt(
+              areaValue,
+              (message) => {
+                return aesFunction.encrypt(message, inputValue)
+              },
+              {
+                modeOfOperation: modeOfOperation.MODE.ECB
+              }
+            )
+          );
         } catch (err) {
           console.log(err);
         }
       } else {
         try {
           setAESResult(
-            aesFunction.decrypt(
+            modeOfOperation.decrypt(
               areaValue
                 .split(",")
                 .map((char) => +char)
                 .flat(),
-              inputValue
+                (ciphertext) => {
+                  return aesFunction.decrypt(ciphertext, inputValue)
+                },
+                {
+                  modeOfOperation: modeOfOperation.MODE.ECB
+                }
             )
           );
         } catch (err) {
@@ -52,12 +68,12 @@ const AES = (props) => {
 
   const onButtonClick = () => {
     if (!switchMode) {
-      setAreaMaxVal(16);
+      setAreaMaxVal();
       setAreaValue("");
       setAESResult("");
       setButtonText("Current: encryption");
     } else {
-      setAreaMaxVal(64);
+      setAreaMaxVal();
       setAreaValue("");
       setAESResult("");
       setButtonText("Current: decryption");
