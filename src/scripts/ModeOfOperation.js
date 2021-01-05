@@ -150,9 +150,24 @@ class CTR {
     }
 }
 
+/**
+ * Mode of operation for block ciphers
+ * 
+ * Usage:
+ * 
+ * -encrypt message of any length: encrypt(message, encryptFunc, decryptFunc, params = {})
+ * 
+ * -decrypt message of any length: decrypt(message, encryptFunc, decryptFunc, params = {})
+ */
 export default class ModeOfOperation {
     static PADDING_TYPE = {
         ADD_ZEROES: 0,
+        PKCS: 1,
+        ANSIX923: 2,
+        ISO10126_2: 3,
+        ISO7816_4: 4,
+        //dopelnienie bitowe tozsame z ISO7816_4
+        TBC: 5, //Trailing Bit Complement
         DEFAULT: 0
     };
     static MODE = {
@@ -181,6 +196,59 @@ export default class ModeOfOperation {
                 message += '\u0000';
             }
             return message;
+        }else if(paddingType == this.PADDING_TYPE.PKCS){
+            let n = blockSize - message.length;
+            if(n == 0){
+                n = blockSize;
+            }
+            for(let i = 0; i < n; ++i){
+                message += String.fromCharCode(n);
+            }
+            
+            return message;
+        }else if(paddingType == this.PADDING_TYPE.ANSIX923){
+            let n = blockSize - message.length;
+            if(n == 0){
+                n = blockSize;
+            }
+            message += String.fromCharCode(n);
+            for(let i = 1; i < n; ++i){
+                message += "\u0000";
+            }
+            
+            return message;
+        }else if(paddingType == this.PADDING_TYPE.ISO10126_2){
+            let n = blockSize - message.length;
+            if(n == 0){
+                n = blockSize;
+            }
+            for(let i = 0; i < n - 1; ++i){
+                message += String.fromCharCode( Math.floor(Math.random() * 255) );
+            }
+            message += String.fromCharCode(n);
+            
+            return message;
+        }else if(paddingType == this.PADDING_TYPE.ISO7816_4){
+            let n = blockSize - message.length;
+            if(n == 0){
+                n = blockSize;
+            }
+            message += "\u0080";
+            for(let i = 1; i < n; ++i){
+                message += "\u0000";
+            }
+
+            return message;
+        }else if(paddingType == this.PADDING_TYPE.TBC){
+            let n = blockSize - message.length;
+            if(n == 0){
+                n = blockSize;
+            }
+            let toAdd = (message.charCodeAt(message.length - 1) & 0b1) ? "\u0000" : "\u00ff";
+            for(let i = 0; i < n; ++i){
+                message += toAdd;
+            }
+            return message;
         }
 
         return message;
@@ -188,6 +256,24 @@ export default class ModeOfOperation {
     static removePadding(message, blockSize = 16, paddingType = this.PADDING_TYPE.DEFAULT){
         if(paddingType == this.PADDING_TYPE.ADD_ZEROES){
             message = message.replace(/(\u0000){1,}$/, "");
+            return message;
+        }else if(
+            paddingType == this.PADDING_TYPE.PKCS
+            || paddingType == this.PADDING_TYPE.ANSIX923
+            || paddingType == this.PADDING_TYPE.ISO10126_2
+        ){
+            let n = message.charCodeAt(message.length - 1);
+            message = message.substr(0, message.length - n);
+            return message;
+        }else if(paddingType == this.PADDING_TYPE.ISO7816_4){
+            message = message.replace(/(\u0080)(\u0000){1,}$/, "");
+            return message;
+        }else if(paddingType == this.PADDING_TYPE.TBC){
+            if(message.charCodeAt(message.length - 1) & 0b1){
+                message = message.replace(/(\u00ff){1,}$/, "");
+            }else{
+                message = message.replace(/(\u0000){1,}$/, "");
+            }
             return message;
         }
 
@@ -233,7 +319,7 @@ export default class ModeOfOperation {
         let paddingType, modeOfOperation, blockSize, iv, nonce;
         [paddingType, modeOfOperation, blockSize, iv, nonce] = this.getParams(params);
 
-        message = this.addPadding(message, blockSize, params.paddingType);
+        message = this.addPadding(message, blockSize, paddingType);
         let messageBlocks = this.messageIntoBlocks(message, blockSize);
 
         if(modeOfOperation == this.MODE.ECB){

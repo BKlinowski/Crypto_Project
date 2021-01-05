@@ -31,6 +31,7 @@ const AES = (props) => {
                 return aesFunction.decrypt(ciphertext, inputValue)
               },
               {
+                paddingType: modeOfOperation.PADDING_TYPE.ISO10126_2,
                 modeOfOperation: modeOfOperation.MODE.CTR,
                 nonce: "aaaaBBBB"
               }
@@ -54,6 +55,7 @@ const AES = (props) => {
                   return aesFunction.decrypt(ciphertext, inputValue)
                 },
                 {
+                  paddingType: modeOfOperation.PADDING_TYPE.ISO10126_2,
                   modeOfOperation: modeOfOperation.MODE.CTR,
                   nonce: "aaaaBBBB"
                 }
