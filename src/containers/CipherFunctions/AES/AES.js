@@ -27,8 +27,12 @@ const AES = (props) => {
               (message) => {
                 return aesFunction.encrypt(message, inputValue)
               },
+              (ciphertext) => {
+                return aesFunction.decrypt(ciphertext, inputValue)
+              },
               {
-                modeOfOperation: modeOfOperation.MODE.ECB
+                modeOfOperation: modeOfOperation.MODE.CTR,
+                nonce: "aaaaBBBB"
               }
             )
           );
@@ -43,11 +47,15 @@ const AES = (props) => {
                 .split(",")
                 .map((char) => +char)
                 .flat(),
+                (message) => {
+                  return aesFunction.encrypt(message, inputValue)
+                },
                 (ciphertext) => {
                   return aesFunction.decrypt(ciphertext, inputValue)
                 },
                 {
-                  modeOfOperation: modeOfOperation.MODE.ECB
+                  modeOfOperation: modeOfOperation.MODE.CTR,
+                  nonce: "aaaaBBBB"
                 }
             )
           );
