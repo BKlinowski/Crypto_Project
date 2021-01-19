@@ -5,6 +5,7 @@ import OptionCamellia from "../../../components/Options/Option/OptionCamellia/Op
 import Camellia from "../../../scripts/camellia/camellia";
 
 import camelliaFunction from "../../../scripts/camellia/camellia";
+import modeOfOperation from "../../../scripts/ModeOfOperation";
 
 const AES = (props) => {
   const [areaValue, setAreaValue] = useState("");
@@ -13,7 +14,7 @@ const AES = (props) => {
   const [buttonText, setButtonText] = useState("Current: encryption");
   const [camelliaResult, setCamelliaResult] = useState("");
   const [camellia, setCamellia] = useState(null);
-  const [areaMaxVal, setAreaMaxVal] = useState(16);
+  const [areaMaxVal, setAreaMaxVal] = useState();
 
   useEffect(() => {
     if (inputValue.length == 32) {
@@ -26,9 +27,39 @@ const AES = (props) => {
 
   useEffect(() => {
     if (switchMode && inputValue && areaValue) {
-      setCamelliaResult(camellia.encrypt(areaValue));
+      setCamelliaResult(
+        modeOfOperation.encrypt(
+          areaValue,
+          (message) => {
+            return camellia.encrypt(message)
+          },
+          (ciphertext) => {
+            return camellia.decrypt(ciphertext[0])
+          },
+          {
+            paddingType: modeOfOperation.PADDING_TYPE.ISO10126_2,
+            modeOfOperation: modeOfOperation.MODE.ECB,
+            blockSize: 16,
+          }
+        )
+      );
     } else if (!switchMode && inputValue && areaValue) {
-      setCamelliaResult(camellia.decrypt(areaValue));
+      setCamelliaResult(
+        modeOfOperation.decrypt(
+          areaValue.split(","),
+          (message) => {
+            return camellia.encrypt(message)
+          },
+          (ciphertext) => {
+            return camellia.decrypt(ciphertext[0])
+          },
+          {
+            paddingType: modeOfOperation.PADDING_TYPE.ISO10126_2,
+            modeOfOperation: modeOfOperation.MODE.ECB,
+            blockSize: 4,
+          }
+        )
+      );
     } else {
       setCamelliaResult("Just type some characters");
     }
@@ -45,11 +76,11 @@ const AES = (props) => {
   const onButtonClick = () => {
     if (!switchMode) {
       setAreaValue("");
-      setAreaMaxVal(16);
+      setAreaMaxVal();
       setButtonText("Current: encryption");
     } else {
       setAreaValue("");
-      setAreaMaxVal(32);
+      setAreaMaxVal();
       setButtonText("Current: decryption");
     }
     setSwitchMode(!switchMode);
