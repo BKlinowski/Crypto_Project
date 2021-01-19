@@ -34,7 +34,6 @@ const MD5 = (text) => {
 
   let messageBlock = new Utils(text);
   let X = messageBlock.words;
-  console.log(X);
   for (let i = 0; i < X.length; i += 16) {
     let AA = A;
     let BB = B;

@@ -1,6 +1,7 @@
 .Container {
   display: grid;
   grid-template-columns: 1fr 4fr;
+  gap: 5px;
 }
 
 .Input {
@@ -13,7 +14,10 @@
   width: 30%;
 }
 .InputButton {
-  width: 70%;
+  width: 100%;
+  padding: 3px;
+  border: 1px solid var(--input-stroke);
+  background-color: var(--input-background);
   min-width: 10rem;
   display: inline;
   margin: 0 auto;
@@ -26,6 +30,13 @@
 
 .ButtonSuccess {
   background-color: var(--success);
+}
+
+.Area {
+  font-family: inherit;
+  font-size: 16px;
+  border: 1px solid var(--input-stroke);
+  background-color: var(--input-background);
 }
 
 .ButtonDanger {

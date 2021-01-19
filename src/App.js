@@ -26,11 +26,6 @@ const Chacha20 = React.lazy(() => {
 const BlowFish = React.lazy(() => {
   return import("./containers/CipherFunctions/BlowFish/BlowFish");
 });
-
-const TwoFish = React.lazy(() => {
-  return import("./containers/CipherFunctions/TwoFish/TwoFish");
-});
-
 const MD5 = React.lazy(() => {
   return import("./containers/HashFunctions/md5/md5");
 });
@@ -44,7 +39,6 @@ function App() {
       <Route path="/Camellia" render={(props) => <Camellia {...props} />} />
       <Route path="/Chacha20" render={(props) => <Chacha20 {...props} />} />
       <Route path="/BlowFish" render={(props) => <BlowFish {...props} />} />
-      <Route path="/TwoFish" render={(props) => <TwoFish {...props} />} />
       <Route path="/MD5" render={(props) => <MD5 {...props} />} />
     </Switch>
   );

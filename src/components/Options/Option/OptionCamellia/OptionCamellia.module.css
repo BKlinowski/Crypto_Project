@@ -1,6 +1,15 @@
 .Container {
   display: grid;
   grid-template-columns: 1fr 4fr;
+  gap: 5px;
+}
+
+.Select {
+  font-family: inherit;
+  font-size: 24px;
+  border: 1px solid var(--input-stroke);
+  background-color: var(--input-background);
+  /* grid-column: span 2; */
 }
 
 .Input {

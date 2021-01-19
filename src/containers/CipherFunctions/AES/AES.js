@@ -13,27 +13,34 @@ const AES = (props) => {
   const [switchMode, setSwitchMode] = useState(true);
   const [buttonText, setButtonText] = useState("Current: encryption");
   const [areaMaxVal, setAreaMaxVal] = useState();
+  const [modeValue, setModeValue] = useState("ECB");
+  const [nonceValue, setNonceValue] = useState("");
+  const [nonceMode, setNonceMode] = useState("");
   // const [encTimeout, setEncTimeout] = useState(null);
 
   useEffect(() => {
+    console.log(modeValue);
     if (inputValue.length !== 16) {
       setAESResult("Key must be 16 characters length!");
+    } else if (modeValue !== "ECB" && nonceValue.length !== 8) {
+      setAESResult("Nonce value must be 8 characters length!");
     } else {
       if (switchMode) {
         try {
+          console.log(nonceValue);
           setAESResult(
             modeOfOperation.encrypt(
               areaValue,
               (message) => {
-                return aesFunction.encrypt(message, inputValue)
+                return aesFunction.encrypt(message, inputValue);
               },
               (ciphertext) => {
-                return aesFunction.decrypt(ciphertext, inputValue)
+                return aesFunction.decrypt(ciphertext, inputValue);
               },
               {
                 paddingType: modeOfOperation.PADDING_TYPE.ISO10126_2,
-                modeOfOperation: modeOfOperation.MODE.CTR,
-                nonce: "aaaaBBBB"
+                modeOfOperation: modeOfOperation.MODE.nonceMode,
+                nonce: nonceValue,
               }
             )
           );
@@ -48,17 +55,17 @@ const AES = (props) => {
                 .split(",")
                 .map((char) => +char)
                 .flat(),
-                (message) => {
-                  return aesFunction.encrypt(message, inputValue)
-                },
-                (ciphertext) => {
-                  return aesFunction.decrypt(ciphertext, inputValue)
-                },
-                {
-                  paddingType: modeOfOperation.PADDING_TYPE.ISO10126_2,
-                  modeOfOperation: modeOfOperation.MODE.CTR,
-                  nonce: "aaaaBBBB"
-                }
+              (message) => {
+                return aesFunction.encrypt(message, inputValue);
+              },
+              (ciphertext) => {
+                return aesFunction.decrypt(ciphertext, inputValue);
+              },
+              {
+                paddingType: modeOfOperation.PADDING_TYPE.ISO10126_2,
+                modeOfOperation: modeOfOperation.MODE.nonceMode,
+                nonce: nonceValue,
+              }
             )
           );
         } catch (err) {
@@ -66,7 +73,46 @@ const AES = (props) => {
         }
       }
     }
-  }, [areaValue, inputValue]);
+  }, [areaValue, inputValue, nonceValue, modeValue, switchMode]);
+
+  useEffect(() => {
+    // console.log(nonceMode);
+    switch (modeValue) {
+      case "ECB": {
+        setNonceMode("");
+        break;
+      }
+      case "CBC": {
+        setNonceMode("IV");
+        break;
+      }
+      case "CFB": {
+        setNonceMode("IV");
+        break;
+      }
+      case "OFB": {
+        setNonceMode("IV");
+        break;
+      }
+      case "CTR": {
+        setNonceMode("nonce");
+        break;
+      }
+      default: {
+        setNonceMode("");
+        break;
+      }
+    }
+  }, [modeValue, setNonceMode]);
+
+  const onNonceChange = (event) => {
+    setNonceValue(event.target.value);
+  };
+
+  const onModeChange = (event) => {
+    setAESResult("");
+    setModeValue(event.target.value);
+  };
 
   const onTextAreaChange = (event) => {
     setAreaValue(event.target.value);
@@ -81,11 +127,13 @@ const AES = (props) => {
       setAreaMaxVal();
       setAreaValue("");
       setAESResult("");
+      setNonceValue("");
       setButtonText("Current: encryption");
     } else {
       setAreaMaxVal();
       setAreaValue("");
       setAESResult("");
+      setNonceValue("");
       setButtonText("Current: decryption");
     }
     setSwitchMode(!switchMode);
@@ -93,7 +141,7 @@ const AES = (props) => {
 
   return (
     <DefaultMain max={areaMaxVal} onTextAreaChange={onTextAreaChange} areaValue={areaValue} result={aesResult}>
-      <OptionAES switchMode={switchMode} switchModeText={buttonText} inputValue={inputValue} onInputChange={onInputChange} onButtonClick={onButtonClick} />
+      <OptionAES switchMode={switchMode} switchModeText={buttonText} inputValue={inputValue} onInputChange={onInputChange} onButtonClick={onButtonClick} onModeChange={onModeChange} modeValue={modeValue} nonceMode={nonceMode} onNonceChange={onNonceChange} />
     </DefaultMain>
   );
 };
