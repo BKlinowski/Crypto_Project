@@ -197,7 +197,7 @@ export default class ModeOfOperation {
             }
             return message;
         }else if(paddingType == this.PADDING_TYPE.PKCS){
-            let n = blockSize - message.length;
+            let n = blockSize - message.length % blockSize;
             if(n == 0){
                 n = blockSize;
             }
@@ -207,7 +207,7 @@ export default class ModeOfOperation {
             
             return message;
         }else if(paddingType == this.PADDING_TYPE.ANSIX923){
-            let n = blockSize - message.length;
+            let n = blockSize - message.length % blockSize;
             if(n == 0){
                 n = blockSize;
             }
@@ -218,7 +218,7 @@ export default class ModeOfOperation {
             
             return message;
         }else if(paddingType == this.PADDING_TYPE.ISO10126_2){
-            let n = blockSize - message.length;
+            let n = blockSize - message.length % blockSize;
             if(n == 0){
                 n = blockSize;
             }
@@ -229,7 +229,7 @@ export default class ModeOfOperation {
             
             return message;
         }else if(paddingType == this.PADDING_TYPE.ISO7816_4){
-            let n = blockSize - message.length;
+            let n = blockSize - message.length % blockSize;
             if(n == 0){
                 n = blockSize;
             }
@@ -240,7 +240,7 @@ export default class ModeOfOperation {
 
             return message;
         }else if(paddingType == this.PADDING_TYPE.TBC){
-            let n = blockSize - message.length;
+            let n = blockSize - message.length % blockSize;
             if(n == 0){
                 n = blockSize;
             }
@@ -359,7 +359,7 @@ export default class ModeOfOperation {
         let paddingType, modeOfOperation, blockSize, iv, nonce;
         [paddingType, modeOfOperation, blockSize, iv, nonce] = this.getParams(params);
         
-        let ciphertextBlocks = this.messageIntoBlocks(ciphertext, blockSize);
+        let ciphertextBlocks = this.messageIntoBlocks(ciphertext, blockSize/4); //divide by 4, since int is 4 byte
 
         let plaintext = "";
         if(modeOfOperation == this.MODE.ECB){

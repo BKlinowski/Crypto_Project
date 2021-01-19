@@ -49,12 +49,23 @@ const BlowFish = (props) => {
       } else {
         try {
           setBlowFishResult(
-            blowfishFunction.decrypt(
+            modeOfOperation.decrypt(
               areaValue
                 .split(",")
                 .map((char) => +char)
                 .flat(),
-              inputValue
+              (message) => {
+                return blowfishFunction.encrypt(message, inputValue);
+              },
+              (ciphertext) => {
+                return blowfishFunction.decrypt(ciphertext, inputValue);
+              },
+              {
+                paddingType: modeOfOperation.PADDING_TYPE.ISO10126_2,
+                modeOfOperation: modeOfOperation.MODE.nonceMode,
+                nonce: nonceValue,
+                blockSize: 8,
+              }
             )
           );
         } catch (err) {

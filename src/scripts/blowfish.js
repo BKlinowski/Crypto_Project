@@ -298,7 +298,7 @@ class BlowFish {
 	static decrypt(ct_bytes, key_string) {
 		let ct = ct_bytes;
 		if(ct.length !== 2){
-			return "Error: Plaintext of invalid length";
+			return "Error: Ciphertext of invalid length";
 		}
 		
 		let key_bytes = Utils.strToInt32Arr(key_string);
