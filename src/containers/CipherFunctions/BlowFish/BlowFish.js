@@ -65,6 +65,7 @@ const BlowFish = (props) => {
                 modeOfOperation: modeOfOperation.MODE.nonceMode,
                 nonce: nonceValue,
                 blockSize: 8,
+                storageTypeSize: 4, //BlowFish ciphertext is stored as 4 bytes integers
               }
             )
           );

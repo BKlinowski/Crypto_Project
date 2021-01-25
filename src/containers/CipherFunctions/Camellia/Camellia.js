@@ -56,7 +56,8 @@ const AES = (props) => {
           {
             paddingType: modeOfOperation.PADDING_TYPE.ISO10126_2,
             modeOfOperation: modeOfOperation.MODE.ECB,
-            blockSize: 4,
+            blockSize: 16,
+            storageTypeSize: 16, //Camellia ciphertext is stored as 16 bytes hex string
           }
         )
       );
