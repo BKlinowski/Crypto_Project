@@ -12,14 +12,13 @@ const AES = (props) => {
   const [inputValue, setInputValue] = useState("AAAABBBBCCCCDDDD");
   const [switchMode, setSwitchMode] = useState(true);
   const [buttonText, setButtonText] = useState("Current: encryption");
-  const [areaMaxVal, setAreaMaxVal] = useState();
   const [modeValue, setModeValue] = useState("ECB");
   const [nonceValue, setNonceValue] = useState("");
   const [nonceMode, setNonceMode] = useState("");
   // const [encTimeout, setEncTimeout] = useState(null);
 
   useEffect(() => {
-    console.log(modeValue);
+    console.log(nonceValue);
     if (inputValue.length !== 16) {
       setAESResult("Key must be 16 characters length!");
     } else if (modeValue !== "ECB" && nonceValue.length !== 8) {
@@ -27,7 +26,6 @@ const AES = (props) => {
     } else {
       if (switchMode) {
         try {
-          console.log(nonceValue);
           setAESResult(
             modeOfOperation.encrypt(
               areaValue,
@@ -124,24 +122,20 @@ const AES = (props) => {
 
   const onButtonClick = () => {
     if (!switchMode) {
-      setAreaMaxVal();
       setAreaValue("");
       setAESResult("");
-      setNonceValue("");
       setButtonText("Current: encryption");
     } else {
-      setAreaMaxVal();
       setAreaValue("");
       setAESResult("");
-      setNonceValue("");
       setButtonText("Current: decryption");
     }
     setSwitchMode(!switchMode);
   };
 
   return (
-    <DefaultMain max={areaMaxVal} onTextAreaChange={onTextAreaChange} areaValue={areaValue} result={aesResult}>
-      <OptionAES switchMode={switchMode} switchModeText={buttonText} inputValue={inputValue} onInputChange={onInputChange} onButtonClick={onButtonClick} onModeChange={onModeChange} modeValue={modeValue} nonceMode={nonceMode} onNonceChange={onNonceChange} />
+    <DefaultMain onTextAreaChange={onTextAreaChange} areaValue={areaValue} result={aesResult}>
+      <OptionAES switchMode={switchMode} switchModeText={buttonText} inputValue={inputValue} onInputChange={onInputChange} onButtonClick={onButtonClick} onModeChange={onModeChange} modeValue={modeValue} nonceMode={nonceMode} onNonceChange={onNonceChange} nonceValue={nonceValue} />
     </DefaultMain>
   );
 };

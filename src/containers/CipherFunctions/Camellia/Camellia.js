@@ -42,15 +42,15 @@ const AES = (props) => {
             modeOfOperation.encrypt(
               areaValue,
               (message) => {
-                return camellia.encrypt(areaValue);
+                return camellia.encrypt(message);
               },
               (ciphertext) => {
-                return camellia.decrypt(areaValue);
+                return camellia.decrypt(ciphertext[0]);
               },
               {
                 paddingType: modeOfOperation.PADDING_TYPE.ISO10126_2,
-                modeOfOperation: modeOfOperation.MODE.nonceMode,
-                nonce: nonceValue,
+                modeOfOperation: modeOfOperation.MODE.modeValue,
+                blockSize: 16,
               }
             )
           );
@@ -61,20 +61,17 @@ const AES = (props) => {
         try {
           setCamelliaResult(
             modeOfOperation.decrypt(
-              areaValue
-                .split(",")
-                .map((char) => +char)
-                .flat(),
+              areaValue.split(","),
               (message) => {
-                return camellia.encrypt(areaValue);
+                return camellia.encrypt(message);
               },
               (ciphertext) => {
-                return camellia.decrypt(areaValue);
+                return camellia.decrypt(ciphertext[0]);
               },
               {
                 paddingType: modeOfOperation.PADDING_TYPE.ISO10126_2,
-                modeOfOperation: modeOfOperation.MODE.nonceMode,
-                nonce: nonceValue,
+                modeOfOperation: modeOfOperation.MODE.modeValue,
+                blockSize: 4,
               }
             )
           );
@@ -84,16 +81,6 @@ const AES = (props) => {
       }
     }
   }, [areaValue, inputValue, nonceValue, modeValue, switchMode]);
-
-  /* useEffect(() => {
-    if (switchMode && inputValue && areaValue) {
-      setCamelliaResult(camellia.encrypt(areaValue));
-    } else if (!switchMode && inputValue && areaValue) {
-      setCamelliaResult(camellia.decrypt(areaValue));
-    } else {
-      setCamelliaResult("Just type some characters");
-    }
-  }, [areaValue]); */
 
   useEffect(() => {
     // console.log(nonceMode);
@@ -143,15 +130,11 @@ const AES = (props) => {
   };
 
   const onButtonClick = () => {
+    setAreaValue("");
+    setCamelliaResult("");
     if (!switchMode) {
-      setAreaValue("");
-      setNonceValue("");
-      setCamelliaResult("");
       setButtonText("Current: encryption");
     } else {
-      setAreaValue("");
-      setNonceValue("");
-      setCamelliaResult("");
       setButtonText("Current: decryption");
     }
     setSwitchMode(!switchMode);
@@ -159,7 +142,7 @@ const AES = (props) => {
 
   return (
     <DefaultMain max={areaMaxVal} onTextAreaChange={onTextAreaChange} areaValue={areaValue} result={camelliaResult}>
-      <OptionCamellia switchMode={switchMode} switchModeText={buttonText} inputValue={inputValue} onInputChange={onInputChange} onButtonClick={onButtonClick} onModeChange={onModeChange} modeValue={modeValue} nonceMode={nonceMode} onNonceChange={onNonceChange} />
+      <OptionCamellia switchMode={switchMode} switchModeText={buttonText} inputValue={inputValue} onInputChange={onInputChange} onButtonClick={onButtonClick} onModeChange={onModeChange} modeValue={modeValue} nonceMode={nonceMode} onNonceChange={onNonceChange} nonceValue={nonceValue} />
     </DefaultMain>
   );
 };

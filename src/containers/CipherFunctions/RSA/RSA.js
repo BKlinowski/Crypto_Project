@@ -1,11 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 
 import DefaultMain from "../../../components/DefaultMain/DefaultMain";
 import OptionRSA from "../../../components/Options/Option/OptionRSA/OptionRSA";
 
 import rsaFunction from "../../../scripts/rsa";
 
+import LayoutContext from "../../../context/layout-context";
+
+import styles from "./RSA.module.css";
+
 const RSA = (props) => {
+  const layoutContext = useContext(LayoutContext);
   const [areaValue, setAreaValue] = useState("");
   const [aesResult, setRSAResult] = useState("");
   const [inputValue, setInputValue] = useState("");
@@ -56,8 +61,10 @@ const RSA = (props) => {
     setAreaValue(event.target.value);
   };
 
-  const onKeyGenClick = (event) => {
+  const onKeyGenClick = async (event) => {
+    await layoutContext.switchBackdrop(true);
     let keys = rsaFunction.generateKeys(parseInt(keyLenValue));
+    await layoutContext.switchBackdrop(false);
     let value = "Private:\n";
     value += keys.private + "\n";
     value += "Public:\n";
@@ -89,9 +96,11 @@ const RSA = (props) => {
   };
 
   return (
-    <DefaultMain /*max={areaMaxVal}*/ onTextAreaChange={onTextAreaChange} areaValue={areaValue} result={aesResult}>
-      <OptionRSA switchMode={switchMode} switchModeText={buttonText} onKeyGenClick={onKeyGenClick} keyLenValue={keyLenValue} onKeyLenValueChange={onKeyLenValueChange} inputValue={inputValue} onInputChange={onInputChange} onButtonClick={onButtonClick} />
-    </DefaultMain>
+    <>
+      <DefaultMain /*max={areaMaxVal}*/ onTextAreaChange={onTextAreaChange} areaValue={areaValue} result={aesResult}>
+        <OptionRSA switchMode={switchMode} switchModeText={buttonText} onKeyGenClick={onKeyGenClick} keyLenValue={keyLenValue} onKeyLenValueChange={onKeyLenValueChange} inputValue={inputValue} onInputChange={onInputChange} onButtonClick={onButtonClick} />
+      </DefaultMain>
+    </>
   );
 };
 

@@ -10,7 +10,7 @@ const optionAES = (props) => {
       <label className={styles.Label} htmlFor="iv_key">
         IV:{" "}
       </label>
-      <input maxLength={8} className={styles.Input} id="iv_key" value={props.nonceValue} onChange={props.onNonceChange} type="text" name="nonce_key" />
+      <input maxLength={8} className={styles.Input} id="iv_key" value={props.nonceValue} onChange={props.onNonceChange} type="text" name="iv_key" />
     </>
   );
 
@@ -22,8 +22,6 @@ const optionAES = (props) => {
       <input maxLength={8} className={styles.Input} id="nonce_key" value={props.nonceValue} onChange={props.onNonceChange} type="text" name="nonce_key" />
     </>
   );
-
-  console.log(props.nonceMode);
 
   return (
     <div className={styles.Container}>

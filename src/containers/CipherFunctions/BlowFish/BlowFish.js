@@ -12,7 +12,6 @@ const BlowFish = (props) => {
   const [inputValue, setInputValue] = useState("");
   const [switchMode, setSwitchMode] = useState(true);
   const [buttonText, setButtonText] = useState("Current: encryption");
-  const [areaMaxVal, setAreaMaxVal] = useState();
   const [modeValue, setModeValue] = useState("ECB");
   const [nonceValue, setNonceValue] = useState("");
   const [nonceMode, setNonceMode] = useState("");
@@ -123,25 +122,19 @@ const BlowFish = (props) => {
   };
 
   const onButtonClick = () => {
+    setAreaValue("");
+    setBlowFishResult("");
     if (!switchMode) {
-      setAreaMaxVal(8);
-      setAreaValue("");
-      setBlowFishResult("");
-      setNonceValue("");
       setButtonText("Current: encryption");
     } else {
-      setAreaMaxVal();
-      setAreaValue("");
-      setBlowFishResult("");
-      setNonceValue("");
       setButtonText("Current: decryption");
     }
     setSwitchMode(!switchMode);
   };
 
   return (
-    <DefaultMain max={areaMaxVal} onTextAreaChange={onTextAreaChange} areaValue={areaValue} result={blowfishResult}>
-      <OptionBlowFish switchMode={switchMode} switchModeText={buttonText} inputValue={inputValue} onInputChange={onInputChange} onButtonClick={onButtonClick} onModeChange={onModeChange} modeValue={modeValue} nonceMode={nonceMode} onNonceChange={onNonceChange} />
+    <DefaultMain onTextAreaChange={onTextAreaChange} areaValue={areaValue} result={blowfishResult}>
+      <OptionBlowFish switchMode={switchMode} switchModeText={buttonText} inputValue={inputValue} onInputChange={onInputChange} onButtonClick={onButtonClick} onModeChange={onModeChange} modeValue={modeValue} nonceMode={nonceMode} onNonceChange={onNonceChange} nonceValue={nonceValue} />
     </DefaultMain>
   );
 };
