@@ -284,6 +284,7 @@ export default class ModeOfOperation {
         let paddingType = params.paddingType || this.PADDING_TYPE.DEFAULT;
         let modeOfOperation = params.modeOfOperation || this.MODE.DEFAULT;
         let blockSize = params.blockSize || 16;
+        let storageTypeSize = params.storageTypeSize || 1;
         let iv = params.iv || '';
         let nonce = params.nonce || '';
 
@@ -294,7 +295,7 @@ export default class ModeOfOperation {
             paddingType = this.PADDING_TYPE.DEFAULT;
         }
 
-        return [paddingType, modeOfOperation, blockSize, iv, nonce];
+        return [paddingType, modeOfOperation, blockSize, storageTypeSize, iv, nonce];
     }
 
     /**
@@ -306,6 +307,7 @@ export default class ModeOfOperation {
      * paddingType: ModeOfOperation.PADDING_TYPE.DEFAULT,
      * modeOfOperation: ModeOfOperation.MODE.DEFAULT,
      * blockSize: 16,
+     * storageTypeSize: 1,
      * iv: "",
      * nonce: ""
      * };
@@ -316,11 +318,11 @@ export default class ModeOfOperation {
      * @param {json} params
      */
     static encrypt( message, encryptFunc, decryptFunc, params = {} ){
-        let paddingType, modeOfOperation, blockSize, iv, nonce;
-        [paddingType, modeOfOperation, blockSize, iv, nonce] = this.getParams(params);
+        let paddingType, modeOfOperation, blockSize, storageTypeSize, iv, nonce;
+        [paddingType, modeOfOperation, blockSize, storageTypeSize, iv, nonce] = this.getParams(params);
 
         message = this.addPadding(message, blockSize, paddingType);
-        let messageBlocks = this.messageIntoBlocks(message, blockSize);
+        let messageBlocks = this.messageIntoBlocks(message, blockSize/storageTypeSize);
 
         if(modeOfOperation == this.MODE.ECB){
             return ECB.encrypt(messageBlocks, encryptFunc);
@@ -346,6 +348,7 @@ export default class ModeOfOperation {
      * paddingType: ModeOfOperation.PADDING_TYPE.DEFAULT,
      * modeOfOperation: ModeOfOperation.MODE.DEFAULT,
      * blockSize: 16,
+     * storageTypeSize: 1,
      * iv: "",
      * nonce: ""
      * };
@@ -356,10 +359,10 @@ export default class ModeOfOperation {
      * @param {json} params
      */
     static decrypt( ciphertext, encryptFunc, decryptFunc, params = {} ){
-        let paddingType, modeOfOperation, blockSize, iv, nonce;
-        [paddingType, modeOfOperation, blockSize, iv, nonce] = this.getParams(params);
+        let paddingType, modeOfOperation, blockSize, storageTypeSize, iv, nonce;
+        [paddingType, modeOfOperation, blockSize, storageTypeSize, iv, nonce] = this.getParams(params);
         
-        let ciphertextBlocks = this.messageIntoBlocks(ciphertext, blockSize/4); //divide by 4, since int is 4 byte
+        let ciphertextBlocks = this.messageIntoBlocks(ciphertext, blockSize/storageTypeSize);
 
         let plaintext = "";
         if(modeOfOperation == this.MODE.ECB){
