@@ -155,17 +155,14 @@ class RSA {
     let howmany = 0;
     while (!this.miller_rabin_primality_test(p)) {
       p = this.randomBigInt(primeLenInBytes);
-      console.log(p);
-      howmany++;
-    }
-    
-    while (!this.miller_rabin_primality_test(q)) {
-      q = this.randomBigInt(primeLenInBytes);
-      console.log(q);
       howmany++;
     }
 
-    console.log(howmany);
+    while (!this.miller_rabin_primality_test(q)) {
+      q = this.randomBigInt(primeLenInBytes);
+      howmany++;
+    }
+
     let n = p * q;
     let fi = (p - 1n) * (q - 1n);
 
@@ -208,7 +205,6 @@ class RSA {
    * @returns {string} plaintext as string
    */
   static decrypt(ciphertext, key) {
-    console.log(ciphertext, key);
     let ciphertextBytes = ciphertext;
     let output = [];
 

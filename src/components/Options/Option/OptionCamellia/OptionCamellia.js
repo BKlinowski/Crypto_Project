@@ -23,8 +23,6 @@ const optionCamellia = (props) => {
     </>
   );
 
-  console.log(props.nonceMode);
-
   return (
     <div className={styles.Container}>
       <label className={styles.Label} htmlFor="Camellia_key">

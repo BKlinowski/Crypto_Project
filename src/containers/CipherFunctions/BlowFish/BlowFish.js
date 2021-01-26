@@ -76,7 +76,6 @@ const BlowFish = (props) => {
   }, [areaValue, inputValue, nonceValue, modeValue, switchMode]);
 
   useEffect(() => {
-    // console.log(nonceMode);
     switch (modeValue) {
       case "ECB": {
         setNonceMode("");

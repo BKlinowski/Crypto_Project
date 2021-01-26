@@ -8,7 +8,6 @@ import useAsyncState from "../customHooks/asyncState";
 
 const Layout = (props) => {
   const [backdrop, setBackdrop] = useAsyncState(false);
-  console.log("Render");
   const switchBackdrop = async (val) => {
     await setBackdrop(val);
   };

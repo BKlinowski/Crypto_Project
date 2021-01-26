@@ -18,7 +18,6 @@ const AES = (props) => {
   // const [encTimeout, setEncTimeout] = useState(null);
 
   useEffect(() => {
-    console.log(nonceValue);
     if (inputValue.length !== 16) {
       setAESResult("Key must be 16 characters length!");
     } else if (modeValue !== "ECB" && nonceValue.length !== 8) {
@@ -74,7 +73,6 @@ const AES = (props) => {
   }, [areaValue, inputValue, nonceValue, modeValue, switchMode]);
 
   useEffect(() => {
-    // console.log(nonceMode);
     switch (modeValue) {
       case "ECB": {
         setNonceMode("");

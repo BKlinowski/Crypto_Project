@@ -29,61 +29,47 @@ const AES = (props) => {
   }, [inputValue]);
 
   useEffect(() => {
-    console.log(modeValue);
-    if (inputValue.length !== 32) {
-      setCamelliaResult("Key must be 32 characters length!");
-    } else if (modeValue !== "ECB" && nonceValue.length !== 8) {
-      setCamelliaResult("Nonce value must be 8 characters length!");
+    if (switchMode && inputValue && areaValue) {
+      setCamelliaResult(
+        modeOfOperation.encrypt(
+          areaValue,
+          (message) => {
+            return camellia.encrypt(message);
+          },
+          (ciphertext) => {
+            return camellia.decrypt(ciphertext[0]);
+          },
+          {
+            paddingType: modeOfOperation.PADDING_TYPE.ISO10126_2,
+            modeOfOperation: modeOfOperation.MODE.ECB,
+            blockSize: 16,
+          }
+        )
+      );
+    } else if (!switchMode && inputValue && areaValue) {
+      setCamelliaResult(
+        modeOfOperation.decrypt(
+          areaValue.split(","),
+          (message) => {
+            return camellia.encrypt(message);
+          },
+          (ciphertext) => {
+            return camellia.decrypt(ciphertext[0]);
+          },
+          {
+            paddingType: modeOfOperation.PADDING_TYPE.ISO10126_2,
+            modeOfOperation: modeOfOperation.MODE.ECB,
+            blockSize: 16,
+            storageTypeSize: 16, //Camellia ciphertext is stored as 16 bytes hex string
+          }
+        )
+      );
     } else {
-      if (switchMode) {
-        try {
-          console.log(nonceValue);
-          setCamelliaResult(
-            modeOfOperation.encrypt(
-              areaValue,
-              (message) => {
-                return camellia.encrypt(message);
-              },
-              (ciphertext) => {
-                return camellia.decrypt(ciphertext[0]);
-              },
-              {
-                paddingType: modeOfOperation.PADDING_TYPE.ISO10126_2,
-                modeOfOperation: modeOfOperation.MODE.modeValue,
-                blockSize: 16,
-              }
-            )
-          );
-        } catch (err) {
-          console.log(err);
-        }
-      } else {
-        try {
-          setCamelliaResult(
-            modeOfOperation.decrypt(
-              areaValue.split(","),
-              (message) => {
-                return camellia.encrypt(message);
-              },
-              (ciphertext) => {
-                return camellia.decrypt(ciphertext[0]);
-              },
-              {
-                paddingType: modeOfOperation.PADDING_TYPE.ISO10126_2,
-                modeOfOperation: modeOfOperation.MODE.modeValue,
-                blockSize: 4,
-              }
-            )
-          );
-        } catch (err) {
-          console.log(err);
-        }
-      }
+      setCamelliaResult("Just type some characters");
     }
-  }, [areaValue, inputValue, nonceValue, modeValue, switchMode]);
+  }, [areaValue]);
 
   useEffect(() => {
-    // console.log(nonceMode);
     switch (modeValue) {
       case "ECB": {
         setNonceMode("");

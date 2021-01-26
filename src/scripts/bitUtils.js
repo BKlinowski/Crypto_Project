@@ -81,10 +81,6 @@ export class BitConverter {
 
     for (let i = 0; i < bytes.length; ++i) {
       for (let j = 7; j >= 0; --j) {
-        /*  console.log(
-          `Right: ${bytes[i] & (1 << j)} and full ${(bytes[i] & (1 << j)) >> j}`
-        ); */
-
         ret.push((bytes[i] & (1 << j)) >> j);
       }
     }
@@ -156,12 +152,7 @@ export function XOR(a, b) {
     let tmpA = a,
       tmpB = b;
     for (let i = 0; i < 10; ++i) {
-      if (
-        typeof tmpA[0] !== "undefined" &&
-        typeof tmpB[0] !== "undefined" &&
-        Array.isArray(tmpA[0]) &&
-        Array.isArray(tmpB[0])
-      ) {
+      if (typeof tmpA[0] !== "undefined" && typeof tmpB[0] !== "undefined" && Array.isArray(tmpA[0]) && Array.isArray(tmpB[0])) {
         dimension += 1;
         tmpA = tmpA[0];
         tmpB = tmpB[0];
@@ -189,8 +180,6 @@ export function XOR(a, b) {
       throw Error("Currently XOR doesn't support " + dimension + "d arrays!");
     }
   } else {
-    //XOR default
-    console.log("WARNING:", "XORing unsupported types!");
     return a ^ b;
   }
 }
@@ -238,7 +227,6 @@ export function print1dArray(array, base = 16) {
   for (let i = 0; i < array.length; ++i) {
     str2print += " " + array[i].toString(base);
   }
-  console.log(str2print);
 }
 /**
  * prints 2d array
@@ -254,5 +242,4 @@ export function print1dArrayAs2d(array, base = 16, width = default2dWidth) {
     }
     str2print += array[i].toString(base);
   }
-  console.log(str2print);
 }

@@ -29,7 +29,6 @@ export default class Utils {
     let hexCopy = [...hex];
     let bits = [];
     for (let i = 0; i < hexCopy.length; i += 1) {
-      //   console.log(parseInt(bitsCopyString.slice(i, i + 4), 2));
       bits.push(parseInt(hexCopy[i], 16).toString(2).padStart(4, "0"));
     }
     // parseInt(bitsCopy.toString().replaceAll(",", ""), 2).toString(16)
@@ -44,10 +43,8 @@ export default class Utils {
     let text = "";
     let bitsCopyString = bitsCopy.toString().replaceAll(",", "");
     for (let i = 0; i < bitsCopyString.length; i += 4) {
-      //   console.log(parseInt(bitsCopyString.slice(i, i + 4), 2));
       text += parseInt(bitsCopyString.slice(i, i + 4), 2).toString(16);
     }
-    // parseInt(bitsCopy.toString().replaceAll(",", ""), 2).toString(16)
     return text;
   }
 
@@ -109,7 +106,6 @@ export default class Utils {
   static XOR(...bitsArr) {
     let bitsArrCopy = [...bitsArr];
     let result = bitsArrCopy[0].slice();
-    // console.log("XOR", result);
     for (let i = 0; i < bitsArrCopy.length - 1; i++) {
       for (let j = 0; j < bitsArrCopy[i].length; j++) {
         result[j] = result[j] ^ bitsArrCopy[i + 1][j];
